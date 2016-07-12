@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[刘浩的博客]]></title>
+  <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
+  <link href="http://liuhaoxiu.github.io/"/>
+  <updated>2016-07-12T15:20:44+08:00</updated>
+  <id>http://liuhaoxiu.github.io/</id>
+  <author>
+    <name><![CDATA[刘浩]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+</feed>
