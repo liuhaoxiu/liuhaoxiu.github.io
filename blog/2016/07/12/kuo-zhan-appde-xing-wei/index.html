@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>扩展App的行为 - 刘浩的博客</title>
+  <meta name="author" content="刘浩">
+
+  
+  <meta name="description" content="引言 此篇文章几乎是对照着Apple文档翻译，某些地方是按照自己理解翻译的，难免有理解和翻译不当的地方，在此告知。 扩展APP行为 每一个新的Xcode项目从配置好到马上运行在iOS模拟器或者设备上。但是简单的能够运行在一个设备上并不意味着你的APP准备好传送到APP Store上。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://liuhaoxiu.github.io/blog/2016/07/12/kuo-zhan-appde-xing-wei/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="刘浩的博客" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">刘浩的博客</a></h1>
+  
+    <h2>纯当是做个笔记，顺便分享一些知识，更希望业界的交流</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="liuhaoxiu.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="https://github.com/liuhaoxiu">GitHub</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">扩展App的行为</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-12T18:30:04+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:30 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>引言</h1>
+
+<p>此篇文章几乎是对照着Apple文档翻译，某些地方是按照自己理解翻译的，难免有理解和翻译不当的地方，在此告知。</p>
+
+<h1>扩展APP行为</h1>
+
+<p>每一个新的Xcode项目从配置好到马上运行在iOS模拟器或者设备上。但是简单的能够运行在一个设备上并不意味着你的APP准备好传送到APP Store上。每一个APP都需要一定量的定制去确保给用户一个好的用户体验。定制的范围从给APP一个图标到制作一个建筑级别决定你的APP如何去呈现和使用信息。这些定制的行为可以再APP的计划过程中尽早的考虑。</p>
+
+<h1>具体的可以分为以下几项</h1>
+
+<h2>提供所需的资源</h2>
+
+<h3>你创建每一个APP都必须有接下来的资源集合和元数据如此它才能正确的显示在设备上。</h3>
+
+<ol>
+<li>一个信息属性列表文件。这个Info.plist文件包含了你的APP的元数据，系统使用这些信息去和你的APP交互。Xcode会自动的基于你的项目的配置和设置创建这个文件。如果你想直接的查看或者修改这个内容，你能操作你的项目的Info选项卡。</li>
+<li>一个APP所需能力的声明。每一个APP必须声明它运行时所需要的硬件能力或者特性.APP Store使用这个信息确定是否能够在一个特定的设备上运行你的APP。你能够在Info选项卡的"Required device capabilities"条目上编辑你的APP需要量列表。</li>
+<li>一个或者多个图标。系统在用户设备主屏幕上显示的你的APP的图标。系统可能显示在设置应用上或者一个查询结果上使用的是你图标其他的版本。</li>
+<li>一个或者多个启动图片。当一个APP启动时，系统显示一个临时的图片直到这个APP能够呈现它的用户界面为止。这个临时的图片是你的APP的 启动图片他提供给用户及时的反馈你的APP是正在启动和将要马上准备好了。你必须提供至少一个启动图片，你可能提供了额外的启动图片去解决不同的场景。</li>
+</ol>
+
+
+<p>以上的这些资源是所有的APP必须的但是你包含的应该不仅仅是这些资源。有更多的键Xcode默认没有包含在你的APP的Info.plist文件中。更多额外的键仅仅是当你的APP包含了特定的特性时加入。</p>
+
+<h1>APP包(Bundle)</h1>
+
+<p>当你建立你的APP的时候，Xcode包装它作为一个包(Bundle).一个包(Bundle)在文件系统中是一组相关的资源放在一个地方的目录。一个iOS App包(Bundle)包含一个APP执行文件和所支持的资源文件例如应用程序图标，图片文件，和本地化内容。</p>
+
+<h1>支持用户隐私</h1>
+
+<p>当你设计你的APP的时候保护用户隐私应该作为一个重要考虑。大部分iOS设备包含了用户和设备数据用户可能不想暴露这些数据到应用和外部实体。请记住如果你用一个不恰当的方法去使用数据用户可能会删除你的APP。
+访问用户或者设备数据仅仅是当用户了解同意并和适当的法律一致时。另外，采取适当的步骤去保护用户和设备数据清晰的告诉用户你要如何使用这些数据。你可以采用下面的一些好的实践。
+1.可以和公司的法律顾问一起看一些来自政府或者行业关于保护移动用户隐私的文档。
+2.请求访问用户或者设备数据有时候是需要的，这个数据是受iOS系统授权设置保护的。考虑在你的Info.plist文件里供应一个用法描述字符串用来解释为什么APP需要用到这个数据。受iOS系统授权设置保护的数据包含位置数据，联系人，日历事件，备忘录，照片和媒体。
+3.明确的告诉用户你将要如何去使用这些数据。
+4.给用户控制这些用户和设备数据。提供设置如此用户能够禁止访问某些需要的敏感数据。
+5.请求使用需要的最少量的用户或者设备数据去完成一个给定的任务。如果不明显的原因或者不必要的原因或者因为你觉得这些数据以后会有用等等这些情况都不要去访问查寻或者收集数据。
+6.采用合理的步骤去保护收集在你的APP中的用户和设备数据。当存储这些信息在本地时，尝试使用iOS数据保护特性 (described in Protecting Data Using On-Disk Encryption)去存储它为一个加密的格式。当你要经过网络发送用户或者设备数据时尝试采用HTTPS连接。
+7.如果你的APP使用了ASIdentifierManager类，你必须考虑它的advertisingTrackingEnabled属性值。如果用户设置这个属性值为NO，使用这个类仅仅是有限的广告目的。
+8.如果你还没有这么做得话，停止使用UDID。这个属性在iOS 5.0已经废弃了。App Store不接受新的APP或者APP更新使用这个标识。作为替代，ASIdentifierManager类的advertisingIdentifier属性是适合的。
+9.如果你的APP支持音频输入，那么仅仅在你实际上计划要开始录音的地方配置你的录音回话（audio session）。如果你没有计划立即录音不要在启动的时候配置你的录音回话（audio session）。在iOS7中，当APP配置他们的录音的录音回话（audio session）时系统会提醒用户，并给用户一个禁用录音的选项。</p>
+
+<h1>APP国际化</h1>
+
+<p>因为APP分布在许多的国家，本地化你的APP能帮助你联络到更多的用户。当APP被本地化为他们的母语时，更多的用户可能会使用这个APP。当你把面向用户的内容作为因素插入到资源文件时，本地化这个内容是一个相对简单的过程。
+在你可能本地化你的内容以前，你必须使你的APP国际化这样是为了便利本地化的过程。国际化APP牵涉的因素有任何面向用户的内容插入到本地化的资源文件和提供存储内容特定语言项目目录。当使用特定语言和特定地区内容工作时它同样意味着使用恰当的技术（例如时间和数字格式化）
+一个完全国际化的APP，本地化过程创建一个新的特定语言资源文件添加到你的项目。一个典型的iOS应用需要接下来这些资源文件类型的本地化版本。
+1.Storyboard文件(或者nib文件)-Storyboard能包含文本标签和另外的需要本地化的内容。你可能同样想调整界面项的位置去适应文本长度的改变。（同样的，nib文件能包含你需要本地化的文本或者你需要去更新的布局）
+2.Strings文件-Strings文件（如此命名是因为他们的.strings文件名扩展）包含你的APP显示的静态文本的本地化版本。
+3.Image文件-你应该避免本地化图片除非图片包含了特定的文化内容。在任何时候，你应该避免直接的存储文本在你的图片文件里面。从你的APP里面加载和使用图片，存储文本到一个strings文件，在运行时，把文字内容和图片内容整合在一起。
+4.录像和录音文件-你应该避免本地化多媒体文件，除非他们包含了特定语言或者特定文化的内容。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘浩</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-07-12T18:30:04+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:30 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/07/12/appsheng-ming-zhou-qi-yu-hou-tai-zhi-xing/" title="Previous Post: APP生命周期与后台执行">&laquo; APP生命周期与后台执行</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/07/12/kuo-zhan-appde-xing-wei/">扩展App的行为</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/07/12/appsheng-ming-zhou-qi-yu-hou-tai-zhi-xing/">APP生命周期与后台执行</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/07/12/jenkins-plus-fastlanechi-xu-ji-cheng/">Jenkins+fastlane持续集成</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 刘浩 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
