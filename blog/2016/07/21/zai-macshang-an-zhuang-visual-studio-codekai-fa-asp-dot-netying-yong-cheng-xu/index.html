@@ -127,73 +127,141 @@
 <h3>你可以创建一个web站点</h3>
 
 <ol>
-<li>就利用上面的项目，你可以更新上面的项目的project.json文件，在中间添加一行依赖于Kestrel HTTP服务包，加入后记得运行dotnet restore命令去恢复包，加入后大概类似以下部分。
-<code>
-{
-"version": "1.0.0-*",
-"buildOptions": {
- "debugType": "portable",
- "emitEntryPoint": true
-},
-"dependencies": {},
-"frameworks": {
- "netcoreapp1.0": {
-   "dependencies": {
-     "Microsoft.NETCore.App": {
-       "type": "platform",
-       "version": "1.0.0"
-     },
-     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0"
-   },
-   "imports": "dnxcore50"
- }
-}
-}
-</code></li>
-<li>添加一个Startup.cs(这个文件是所有的web的入口，是必须的)文件去定义请求逻辑，类似以下：
-<code>
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-namespace aspnetcoreapp
-{
- public class Startup
- {
-     public void Configure(IApplicationBuilder app)
-     {
-         app.Run(context =&gt;
-         {
-             return context.Response.WriteAsync("Hello from ASP.NET Core!");
-         });
-     }
- }
-}
-</code></li>
-<li>更新修改Program.cs去建立和启动这个Web主机(host):
-<code>
-using System;
-using Microsoft.AspNetCore.Hosting;
-namespace aspnetcoreapp
-{
- public class Program
- {
-     public static void Main(string[] args)
-     {
-         var host = new WebHostBuilder()
-             .UseKestrel()
-             .UseStartup&lt;Startup&gt;()
-             .Build();
-         host.Run();
-     }
- }
-}
-</code></li>
+<li>就利用上面的项目，你可以更新上面的项目的project.json文件，在中间添加一行依赖于Kestrel HTTP服务包，加入后记得运行dotnet restore命令去恢复包，加入后大概类似以下部分。</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>{
+</span><span class='line'>  &quot;version&quot;: &quot;1.0.0-*&quot;,
+</span><span class='line'>  &quot;buildOptions&quot;: {
+</span><span class='line'>    &quot;debugType&quot;: &quot;portable&quot;,
+</span><span class='line'>    &quot;emitEntryPoint&quot;: true
+</span><span class='line'>  },
+</span><span class='line'>  &quot;dependencies&quot;: {},
+</span><span class='line'>  &quot;frameworks&quot;: {
+</span><span class='line'>    &quot;netcoreapp1.0&quot;: {
+</span><span class='line'>      &quot;dependencies&quot;: {
+</span><span class='line'>        &quot;Microsoft.NETCore.App&quot;: {
+</span><span class='line'>          &quot;type&quot;: &quot;platform&quot;,
+</span><span class='line'>          &quot;version&quot;: &quot;1.0.0&quot;
+</span><span class='line'>        },
+</span><span class='line'>        &quot;Microsoft.AspNetCore.Server.Kestrel&quot;: &quot;1.0.0&quot;
+</span><span class='line'>      },
+</span><span class='line'>      &quot;imports&quot;: &quot;dnxcore50&quot;
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>添加一个Startup.cs(这个文件是所有的web的入口，是必须的)文件去定义请求逻辑，类似以下：</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Builder</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Hosting</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Http</span><span class="p">;</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">aspnetcoreapp</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">Startup</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Configure</span><span class="p">(</span><span class="n">IApplicationBuilder</span> <span class="n">app</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">app</span><span class="p">.</span><span class="n">Run</span><span class="p">(</span><span class="n">context</span> <span class="p">=&gt;</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">Response</span><span class="p">.</span><span class="n">WriteAsync</span><span class="p">(</span><span class="s">&quot;Hello from ASP.NET Core!&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">});</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>更新修改Program.cs去建立和启动这个Web主机(host):</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Hosting</span><span class="p">;</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">aspnetcoreapp</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">host</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WebHostBuilder</span><span class="p">()</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">UseKestrel</span><span class="p">()</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">UseStartup</span><span class="p">&lt;</span><span class="n">Startup</span><span class="p">&gt;()</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">host</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
 <li><p>运行这个APP(这个dotnet run命令在这个APP有改动的时候自动编译它再运行)</p>
 
 <pre><code> dotnet run
 </code></pre></li>
-<li><p>在浏览器键入<a href="http://localhost:5000%E6%89%93%E5%BC%80%E8%BF%99%E4%B8%AAweb%E7%BD%91%E7%AB%99">http://localhost:5000%E6%89%93%E5%BC%80%E8%BF%99%E4%B8%AAweb%E7%BD%91%E7%AB%99</a>(你可以用Ctrl+C停止这个服务)</p></li>
+<li><p>在浏览器键入<a href="http://localhost:5000">http://localhost:5000</a>打开这个web网站(你可以用Ctrl+C停止这个服务)</p></li>
 </ol>
 
 
@@ -233,7 +301,7 @@ namespace aspnetcoreapp
     dotnet run
 </code></pre>
 
-<p>打开浏览器，导航到<a href="http://localhost:5000">http://localhost:5000</a> 可以看界面。至此一个简单web站点搭建成功。</p>
+<p>打开浏览器，导航到<a href="http://localhost:5000">http://localhost:5000</a>可以看界面。至此一个简单web站点搭建成功。</p>
 
 <h3>利用yo可以添加类到现存项目中</h3>
 
@@ -244,21 +312,34 @@ namespace aspnetcoreapp
 
 <p>结果是一个命名为Person.cs的文件被建立，如下Person:</p>
 
-<p><code>
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-namespace MyNamespace
-{
-    public class Person
-    {
-        public Person()
-        {
-        }
-    }
-}
-</code></p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Threading.Tasks</span><span class="p">;</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">MyNamespace</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">Person</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>扩展</h2>
 
