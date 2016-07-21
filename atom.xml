@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-07-21T11:09:48+08:00</updated>
+  <updated>2016-07-21T11:13:41+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -18,9 +18,7 @@
     <link href="http://liuhaoxiu.github.io/blog/2016/07/21/zai-macshang-an-zhuang-visual-studio-codekai-fa-asp-dot-netying-yong-cheng-xu/"/>
     <updated>2016-07-21T11:02:25+08:00</updated>
     <id>http://liuhaoxiu.github.io/blog/2016/07/21/zai-macshang-an-zhuang-visual-studio-codekai-fa-asp-dot-netying-yong-cheng-xu</id>
-    <content type="html"><![CDATA[<h1>在Mac上安装Visual Studio Code开发Asp.Net应用程序</h1>
-
-<p>  现在微软出了新的跨平台编译器Visual Studio Code，能够横跨Linux、Mac、Windows并在其上面进行web开发，现在ASP.NET已经出到了5.0了而且MVC框架也已近出到6.0.下面我就来写我在Mac上安装Visual Studio Code和与其依赖的环境。</p>
+    <content type="html"><![CDATA[<p>  现在微软出了新的跨平台编译器Visual Studio Code，能够横跨Linux、Mac、Windows并在其上面进行web开发，现在ASP.NET已经出到了5.0了而且MVC框架也已近出到6.0.下面我就来写我在Mac上安装Visual Studio Code和与其依赖的环境。</p>
 
 <h2>安装Visual Studio Code</h2>
 
@@ -169,7 +167,7 @@ namespace aspnetcoreapp
     dotnet run
 </code></pre>
 
-<p>打开浏览器，导航到<a href="http://localhost:5000%E5%8F%AF%E4%BB%A5%E7%9C%8B%E7%95%8C%E9%9D%A2%E3%80%82%E8%87%B3%E6%AD%A4%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95web%E7%AB%99%E7%82%B9%E6%90%AD%E5%BB%BA%E6%88%90%E5%8A%9F%E3%80%82">http://localhost:5000%E5%8F%AF%E4%BB%A5%E7%9C%8B%E7%95%8C%E9%9D%A2%E3%80%82%E8%87%B3%E6%AD%A4%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95web%E7%AB%99%E7%82%B9%E6%90%AD%E5%BB%BA%E6%88%90%E5%8A%9F%E3%80%82</a></p>
+<p>打开浏览器，导航到<a href="http://localhost:5000">http://localhost:5000</a> 可以看界面。至此一个简单web站点搭建成功。</p>
 
 <h3>利用yo可以添加类到现存项目中</h3>
 
