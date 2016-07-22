@@ -149,7 +149,8 @@
 
 <p> 当用户按压休眠/唤醒按钮，APP设置了<code>NSFileProtectionComplete</code>保护选项保护文件，这时必须关闭所有对这些文件的引用。设备配置一个适当的密码，按压休眠/唤醒按钮锁定屏幕会强制系统扔掉文件的解密秘钥使其能起到完整的保护。在这个屏幕锁定期间，任何企图去访问相应的文件将失败。如此如果你有这样的文件，你应该在你的<code>applicationWillResignActive:</code>方法中关闭任何对这些文件的引用和在你的<code>applicationDidBecomeActive:</code>方法中打开新的引用。</p>
 
-<p> <code>Important:总是在你的APP的适当的检查点保存数据，尽管你能使用APP状态迁移去强制对象去写未保存的数据到磁盘，但是绝不等到一个APP的状态迁移去保存数据。例如，一个视图控制器管理用户数据应该在它离开(dismissed)时保存数据</code></p>
+<pre><code>    Important:总是在你的APP的适当的检查点保存数据，尽管你能使用APP状态迁移去强制对象去写未保        存的数据到磁盘，但是绝不等到一个APP的状态迁移去保存数据。例如，一个视图控制器管理用户数据应     该在它离开(dismissed)时保存数据
+</code></pre>
 
 <h3>暂时中断的响应(Responding to Temporary Interruptions)</h3>
 
@@ -163,7 +164,8 @@
 
 <p>返回到前台状态你的APP有机会去重新启动在它移动到后台时停止的任务。</p>
 
-<p><code>Note:当你的APP重新进入前台这个UIApplicationWillEnterForegroundNotification通知是可以获得的。在你的APP里的对象可以去使用默认的通知中心注册这个通知。</code></p>
+<pre><code>    Note:当你的APP重新进入前台这个UIApplicationWillEnterForegroundNotification通知是      可以获得的。在你的APP里的对象可以去使用默认的通知中心注册这个通知。
+</code></pre>
 
 <h3>准备处理排队通知(Be Prepared to Process Queued Notifications)</h3>
 
