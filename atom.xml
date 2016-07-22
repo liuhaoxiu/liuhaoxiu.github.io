@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-07-21T11:21:25+08:00</updated>
+  <updated>2016-07-22T16:22:52+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -12,6 +12,202 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[处理APP状态转换的策略]]></title>
+    <link href="http://liuhaoxiu.github.io/blog/2016/07/22/chu-li-appzhuang-tai-zhuan-huan-de-ce-lue/"/>
+    <updated>2016-07-22T16:01:54+08:00</updated>
+    <id>http://liuhaoxiu.github.io/blog/2016/07/22/chu-li-appzhuang-tai-zhuan-huan-de-ce-lue</id>
+    <content type="html"><![CDATA[<h1>处理APP状态转换的策略(Strategies for Handling App State Transitions)</h1>
+
+<p>  对于每一个APP可能的运行时状态，你的APP在进入每一个状态的时候系统都有不同的预期。但状态迁移发生时，系统通知这个APP对象，这个APP对象通知它自己的代理对象。你能使用<code>UIApplicationDelegate</code>协议的状态迁移方法去发现这些状态的改变和作出适当的响应。</p>
+
+<h2>在APP启动时间做些什么(What to Do at Launch Time)</h2>
+
+<p>  当你的APP已经启动(无论是进入前台和是后台)，使用你的APP代理方法<code>application:willFinishLaunchingWithOptions:</code>和 <code>application:didFinishLaunchingWithOptions:</code>去做一下这些。</p>
+
+<ul>
+<li>检查启动选项字典的内容得到关于为什么这个APP已经启动信息并作出适当的响应。</li>
+<li>初始化你的APP关键的数据结构。</li>
+<li><p>准备你的APP作为显示的窗体(window)和视图(views)</p>
+
+<p>在启动时间，系统自动加载你的APP的主故事板(storyboard)文件和加载初始的视图控制器(view controller)。关于APP支持的状态恢复，在调用<code>application:willFinishLaunchingWithOptions:</code>和 <code>application:didFinishLaunchingWithOptions:</code>方法中间，APP状态恢复机械的恢复你的界面到以前的状态。使用<code>application:willFinishLaunchingWithOptions:</code>方法去显示你的APP窗体(window)和去确定状态恢复是否全部发生。使用<code>application:didFinishLaunchingWithOptions:</code>方法去对你的APP界面做最后的调整。</p>
+
+<p>你的<code>application:willFinishLaunchingWithOptions:</code>和<code>application:didFinishLaunchingWithOptions:</code>方法中应该做尽可能少的事情去减少你的APP的启动时间。APP是预期去启动初始化它们自己并在五秒之内开始处理事件。如果一个APP没有及时的结束它的启动周期，系统会终止它。所以，任何可能减慢你的启动的任务(例如访问网络)应该安排它执行在一个次要的线程上。</p></li>
+</ul>
+
+
+<h3>启动周期(The Launch Cycle)</h3>
+
+<p>  当你的APP已经启动，它从没运行状态(not running)进入到活动状态(active)或者后台状态(background)，迁移短暂的进入到不活动状态作为过渡(inactive)。作为启动周期的一部份，系统为你的APP创建一个过程和主线程并在主线程上调用你APP的主函数(main function)。进来这个默认的主函数随着你的Xcode项目迅速的传递控制到UIKit框架上面，这个主函数大部分的工作是初始化你的APP和为APP运行做准备。
+  当你的APP启动进入后台(background)时-通常去处理一些后台事件类型，和启动进入前台主要不同的是你的APP不是活动的(active),它进入后台状态去操作事件，在操作完时间之后可能会在任何时间挂起。当启动进入后台时，系统任然加载你的APP用户界面文件但是它不显示APP窗体(window)。
+   去确定你的APP是进入前台还是后台，在你的<code>application:willFinishLaunchingWithOptions:</code>或者<code>application:didFinishLaunchingWithOptions:</code>代理方法中检查共享的<code>UIApplication</code>对象的<code>applicationState</code>属性值。当你的APP是进入的前台，这个属性值是<code>UIApplicationStateInactive</code>。当你的APP启动进入了后台，这个属性值是<code>UIApplicationStateBackground</code>，你能使用这个值去调整你的代理方法做相应的启动时间行为。</p>
+
+<h3>横屏模式启动(Launching in Landscape Mode)</h3>
+
+<p>  APP只有使用横屏模式启动它们的界面必须明确的告诉系统这个APP的启动方向。通常的，APP启动在竖屏模式然后界面旋转匹配设备需要的方向。关于APP支持的竖屏和横屏方向，你应该总是配置你的视图到横屏模式然后让你的视图控制器去操作任何的旋转。如果APP支持横屏单不支持竖屏方向，执行以下的几个任务去制作它初始横屏启动。</p>
+
+<ul>
+<li> 添加<code>UIInterfaceOrientation</code>键到你的APP的<code>Info.plist</code>文件，设置这个键的值为 <code>UIInterfaceOrientationLandscapeLeft</code>或者<code>UIInterfaceOrientationLandscapeRight</code>其中一个。</li>
+<li> 布局你的视图在横屏模式，确保它们的布局或者自动尺寸选项是设置正确的。</li>
+<li> 覆盖你的视图控制器的<code>shouldAutorotateToInterfaceOrientation:</code>方法，当旋转到横屏方向的left或者right时返回YES，当旋转到竖屏方向是返回NO。</li>
+</ul>
+
+
+<p><code>Important:APP应该总是使用视图控制器去管理它们基于窗口的内容</code></p>
+
+<p>  这个<code>UIInterfaceOrientation</code>键在<code>Info.plist</code>文件告诉iOS它应该配置APP的状态栏的方向(如果有一个显示的)此外通过视图控制器在启动时间管理视图的方向。视图控制器考虑这个键然后设置他们的视图的初始方向去匹配。使用这个键等同于在早期的 <code>applicationDidFinishLaunching:</code>方法中调用UIApplication对象的<code>setStatusBarOrientation:animated:</code>方法。</p>
+
+<h3>在第一次启动安装APP特定的数据文件(Installing App-Specific Data Files at First Launch)</h3>
+
+<p>  你能利用你的APP第一次启动周期去建立任何数据和需要去运行的配置文件。APP特定的数据文件应该创建在你的APP沙盒的Library/Application Support/<bundleID>/目录，<bundleID>是你的APP包(bundle)标识。你能进一步细分这个目录去组织你需要的数据文件。你能同样创建文件在另外的目录，例如你的APP iClound容器目录或者本地Documents目录，这个主要根据你的需要。
+   如果你的APP包(bundle)包含了你计划去改变的文件，复制这些文件到一个可以修改文件的目录，如果你直接在包(bundle)里面修改它们，那么你的APP的签名会无效，因为APP包(bundle)是代码签名了的，签名无效以为着你的APP在将来启动的时候回被系统阻止，你唯一方法是把这些要修改的文件复制到应用程序沙盒支持的可写的目录然后才能安全的使用这些文件。</p>
+
+<h2>当你的APP暂时的中断时干些什么(What to Do When Your App Is Interrupted Temporarily)</h2>
+
+<p>一个基于提醒的中断导致你的APP暂时失去控制，你的APP继续运行在前台，但是不接收任何来自系统的触摸事件(它不继续去接收通知和另外的事件类型，例如加速计事件)。去响应这个改变，你的APP应该在<code>applicationWillResignActive:</code>方法中做一下的事。</p>
+
+<ul>
+<li>保存数据和任何相关的状态信息.</li>
+<li>停止计时器和另外的定期任务.</li>
+<li>停止运行任何元数据查询.</li>
+<li>不开始任何新任务。</li>
+<li>暂停电影播放(通过AirPlay播放除外).</li>
+<li>如果是游戏就使游戏进入一个暂停状态。</li>
+<li>调节减慢OpenGL ES帧速率.</li>
+<li><p>暂停任何调度队列(dispatch queues)或者操作队列(operation queues)去执行非关键的代码。(你能继续处理网络请求和另外时间灵敏的后台任务在不活动状态(inactive)).</p>
+
+<p>当你的APP迁移回活动(active)状态，它的<code>applicationDidBecomeActive:</code>方法应该反转在<code>applicationWillResignActive:</code>方法中做得任何步骤，你的APP应该重新启动计时器，恢复调度队列，加速OpenGL ES帧速率。无论如何，游戏不应该自动恢复，它们应该保持在暂停状态知道用户选择去恢复它们。</p></li>
+</ul>
+
+
+<p> 当用户按压休眠/唤醒按钮，APP设置了<code>NSFileProtectionComplete</code>保护选项保护文件，这时必须关闭所有对这些文件的引用。设备配置一个适当的密码，按压休眠/唤醒按钮锁定屏幕会强制系统扔掉文件的解密秘钥使其能起到完整的保护。在这个屏幕锁定期间，任何企图去访问相应的文件将失败。如此如果你有这样的文件，你应该在你的<code>applicationWillResignActive:</code>方法中关闭任何对这些文件的引用和在你的<code>applicationDidBecomeActive:</code>方法中打开新的引用。</p>
+
+<p> <code>Important:总是在你的APP的适当的检查点保存数据，尽管你能使用APP状态迁移去强制对象去写未保存的数据到磁盘，但是绝不等到一个APP的状态迁移去保存数据。例如，一个视图控制器管理用户数据应该在它离开(dismissed)时保存数据</code></p>
+
+<h3>暂时中断的响应(Responding to Temporary Interruptions)</h3>
+
+<p>当一个基于提醒的中断发生，例如你一个进来的电话，APP暂时移动到不活动状态如此系统能提示这个用户如何继续下去。APP停留在这个状态直到用户关闭了这个提醒(alert)。在这一点上，APP返回到活动状态或者后台状态。</p>
+
+<p>设置通知作为横幅显示的不会是你的APP不活动(不影响你APP)，基于提醒的APP才会影响(如上)，这个横幅显示在APP窗体顶部的边缘，你的APP可以继续接收触摸事件就像以前一样。无论如何，如果用户拉下这个横幅去显示这个通知中心，你的APP会移动到不活动状态就像发生了一个基于提醒的通知一样。你的APP保持在这个不活动状态直到用户消散(或者关闭反正就是不显示在屏幕上了)了这个通知中心或者启动了另外的APP。在这些情况上，你的APP移动到相应的活动或者后台状态。用户能够使用设置APP(Settings app,就是手机上设置你可以单独设置每个应用的设置地方)去配置那个显示横幅方式的通知和那个显示基于提醒的通知。</p>
+
+<p>按休眠/唤醒按钮是另外一种中断类型，这个引起你的APP临时不活动。当用户按了这个按钮，系统使触摸事件失效(就是系统整个不再接收触摸事件)，移动APP到后台，设置APP的<code>applicationState</code>属性值为<code>UIApplicationStateBackground</code>和锁定屏幕。锁定屏幕对于APP来说是额外的后果，用户数据会保护到加密文件。</p>
+
+<h2>当你的APP进入前台状态时做什么(What to Do When Your App Enters the Foreground)</h2>
+
+<p>返回到前台状态你的APP有机会去重新启动在它移动到后台时停止的任务。</p>
+
+<p><code>Note:当你的APP重新进入前台这个UIApplicationWillEnterForegroundNotification通知是可以获得的。在你的APP里的对象可以去使用默认的通知中心注册这个通知。</code></p>
+
+<h3>准备处理排队通知(Be Prepared to Process Queued Notifications)</h3>
+
+<p>一个APP在挂起状态当它返回到前台或者后台执行状态时必须准备好去处理任何排队通知。一个挂起的APP不处理任何代码，因此也不能处理通知相关方向的改变，时间的变化，偏好的变化，和许多会影响APP外观和状态的变化。确保这些改变没有丢失，系统排队了许多相关的通知，直到APP再一次开始执行代码才交付这些通知给APP（前台或者后台任意一个状态）。为了防止当APP恢复时通知过多时APP发生过载，系统合并事件（每一个相关的事件），这些事件反映的是是你的APP自暂停以来的净变化(net change).</p>
+
+<p>下表中的通知可以合并和交付到你的APP的。大部分这些通知是直接交付到你注册的观察者。像这些与设备方向改变相关的，是典型的通过系统框架拦截然后用另外的方法交付给你的APP。</p>
+
+<table>
+<thead>
+<tr>
+<th>                    事件       </th>
+<th style="text-align:center;">                  通知                           </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 一个配件连接或者断开连接          </td>
+<td style="text-align:center;"> EAAccessoryDidConnectNotification与EAAccessoryDidDisconnectNotification </td>
+</tr>
+<tr>
+<td>设备方向改变                     </td>
+<td style="text-align:center;"> UIDeviceOrientationDidChangeNotification除了这个通知，视图控制器自动的更新他们的界面方向 </td>
+</tr>
+<tr>
+<td>一个有重大意义(significant)的时间变化</td>
+<td style="text-align:center;">UIApplicationSignificantTimeChangeNotification</td>
+</tr>
+<tr>
+<td>电池电量等级改变(The battery level)或者电池状态改变</td>
+<td style="text-align:center;">UIDeviceBatteryLevelDidChangeNotification与UIDeviceBatteryStateDidChangeNotification</td>
+</tr>
+<tr>
+<td>接近状态改变(例如接近传感器)</td>
+<td style="text-align:center;">UIDeviceProximityStateDidChangeNotification</td>
+</tr>
+<tr>
+<td>文件保护状态改变</td>
+<td style="text-align:center;">UIApplicationProtectedDataWillBecomeUnavailable与UIApplicationProtectedDataDidBecomeAvailable</td>
+</tr>
+<tr>
+<td>一个外部的显示连接或者断开连接</td>
+<td style="text-align:center;">UIScreenDidConnectNotification与UIScreenDidDisconnectNotification</td>
+</tr>
+<tr>
+<td>屏幕显示模式改变</td>
+<td style="text-align:center;">UIScreenModeDidChangeNotification</td>
+</tr>
+<tr>
+<td>你的APP偏好通过Settings app暴露出来被更改</td>
+<td style="text-align:center;">NSUserDefaultsDidChangeNotification</td>
+</tr>
+<tr>
+<td>当前语言或者区域设置改变</td>
+<td style="text-align:center;">NSCurrentLocaleDidChangeNotification</td>
+</tr>
+<tr>
+<td>用户的云账户状态改变</td>
+<td style="text-align:center;">NSUbiquityIdentityDidChangeNotification</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>  排队通知是交付到你的APP的主运行循环(run loop)并且通常是交付在任何触摸事件或者另外的用户输入以前。大部分APP应该尽可能足够快的去处理这些事件那样在恢复时才将不会引起任何明显的滞后。无论如何，当你的APP从后台状态返回如果它出现了迟钝，使用Instruments去确定是是否你的通知处理代码引起了延迟。
+  一个APP返回到前台同样接收任何视图的视图更新通知，这些是自从最后一次更新以来需要重新更新的视图。一个APP运行在后台任然可以调用<code>setNeedsDisplay或setNeedsDisplayInRect:</code>方法去请求视图的更新。因外这个视图没有显示，系统合并这些请求当APP返回到前台后更新。</p>
+
+<h3>处理云(iClound)变化(Handle iCloud Changes)</h3>
+
+<p>  处于任何理由的iClound状态改变，系统交付 <code>NSUbiquityIdentityDidChangeNotification</code>通知给你的APP。当用户登录或者登出一个iClound账户或者启用或者禁用文档和数据同步这个iClound状态会改变。这个通知是提示你的APP去更新缓存和任何iClound相关的用户界面元素去适应这个改变。例子，当用户登出iClound，你应该移除所有基于iClound文件或者数据的引用。
+  如果你的APP已经提示用户是否去存储文件到iClound，当iClound状态改变是不会再次提示用户。在第一次提示用户之后，存储用户的选择到你的APP的本地偏好里面。你可能接下来想使用一个设置包(Settings bundle)或者作为在你APP里面的一个选项去暴露这个偏好。但是再次重复提示除非偏好目前没有在你的用户默认数据库里面。</p>
+
+<h3>处理区域变化(Handle Locale Changes)</h3>
+
+<p> 在你的APP挂起期间如果用户改变了当前的区域，当你的APP返回到前台时你能使用<code>NSCurrentLocaleDidChangeNotification</code>通知去强制更新任何视图包含了区域敏感(locale-sensitive)信息，例如时间，计时器，和数字。当然，最好的避免区域相关问题方法是去用你的方式写代码去制作它简单的更新视图。</p>
+
+<h3>处理改变你的APP设置(Handle Changes to Your App’s Settings)</h3>
+
+<p>如果你的APP的设置是通过Settings app管理的，他观察 <code>NSUserDefaultsDidChangeNotification</code>通知。应为用户能改变设置在你的APP挂起或者进入后台期间，你能够使用这个通知去响应那些设置中重大的改变。有时候，响应这个通知能够帮助你关闭一个潜在的安全漏洞。例子，一个邮件程序应该响应用户账户信息的改变。未能监测这些变化可能会引起隐私或者安全问题。典型的，当前的用户可能能够使用旧的账户信息去发送邮件，甚至这个账户不在属于这个用户了。
+根据接收这个<code>NSUserDefaultsDidChangeNotification</code>通知，你的APP应该重新载入任何相关的设置，必要时，适当重置它的用户界面。如果密码或者另外的安全相关的信息改变了，你应该同样隐藏任何先前的显示信息，强制用户去键入新的密码。</p>
+
+<h2>当你的APP进入后台时做什么(What to Do When Your App Enters the Background)</h2>
+
+<p>当从前台移动到后台执行，使用你的app代理的<code>applicationDidEnterBackground:</code>方法去做以下的事:</p>
+
+<ul>
+<li>准备去拿你APP的照片。当你的<code>applicationDidEnterBackground</code>方法返回时，系统拿你的APP用户界面的图片去使用这个结果图片做动画迁移。如果你的用户界面的视图包含了任何的敏感信息，在调用<code>applicationDidEnterBackground</code>方法返回之前你应该隐藏或者修改这些视图。如果你添加了新的视图到你的视图层级并作为这个过处理的一部分，你必须强制这些视图去绘制。</li>
+<li>保存任何APP相关的状态信息。在进入后台之前，你的APP应该已经保存了所有的用户关键数据。使用迁移到后台去保存任何最后一分钟的变化到你的APP状态。</li>
+<li>根据需要释放内存。释放任何你不需要的缓存数据和做任何简单的清理，这个能够减少你APP的内存占用。APP占用太大的内存系统会第一个终止它，如此释放你不需要的图片资源，数据缓存，和任何另外的对象。</li>
+</ul>
+
+
+<p>你的APP代理<code>applicationDidEnterBackground</code>方法有大约五秒钟去结束任何未完成的任务然后返回，事实上，这个方法应该尽可能快的返回。如果这个方法在时间耗尽以前还没有返回，你的APP会被终止占用的内存会被释放。如果你任然需要更多的时间去执行任务，调用<code>beginBackgroundTaskWithExpirationHandler</code>方法去请求更多的后台执行时间，还有就是开启一个长运行任务在次要的线程。不管你是否启动任何后台任务，<code>applicationDidEnterBackground</code>方法在五秒钟之内任然必须退出。</p>
+
+<p><code>Note:系统除了调用applicationDidEnterBackground方法之外还发送 UIApplicationDidEnterBackgroundNotification通知，你可以使用这个通知去分布清理任务到你的APP的另外的对象</code></p>
+
+<h3>后台迁移周期(The Background Transition Cycle)</h3>
+
+<p>当用户按了Home键，按了休眠/唤醒键，或者系统启动了另外一个APP，当前的前台APP迁移到不活动状态接着迁移到后台状态。这些迁移结果导致调用APP的代理<code>applicationWillResignActive:</code> 和<code>applicationDidEnterBackground:</code>方法<code>applicationDidEnterBackground:</code>方法返回后，不久后大部分的APP移动到挂起状态。APP可以请求指定的后台任务(例如音乐播放)或者请求一点额外执行时间让这个APP就能够继续运行一段时间。</p>
+
+<h3>准备APP快照(Prepare for the App Snapshot)</h3>
+
+<p>APP的<code>applicationDidEnterBackground:</code>方法返回后不久，系统拿一个APP窗体的快照。同样的，当一个APP唤醒去执行后台任务时，系统可能拿一个快照去反映任何相关的改变。
+如果你制造改变在APP马上进入后台时，你能调用主视图的<code>snapshotViewAfterScreenUpdates:</code>方法去强制这些改变去渲染。关于快照调用一个视图的<code>setNeedsDisplay</code>方法是无效的因为快照是拿下一个绘制周期以前的，因此阻止任何改变被渲染。调用<code>snapshotViewAfterScreenUpdates</code>并传入参数YES强制立即更新到基础缓冲区给快照机器使用(the snapshot machinery uses.)。</p>
+
+<h3>降低你的内存占用(Reduce Your Memory Footprint)</h3>
+
+<p>每个APP在马上进入后台时应该释放许多的内存这种做法是实用的。系统在同一时间视图保持许多的APP在内存里当它可以能够如此的话，但是当内存运行比较低的时候系统会终止挂起的APP来回收内存。当在后台期间APP消耗大量的内存那么它会第一个被终止。
+实际上来说，当你的APP不在对这个对象需要时你的APP应该移除对这个对象的强引用，移除强引用给编译器有能力去立即释放这个对象，如此相应的内存能够回收。无论如何，如果你想去缓存一些对象去改善性能，你能等到直到APP迁移到后台以前移除对这些对象的引用。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在Mac上安装Visual Studio Code开发Asp.Net应用程序]]></title>
@@ -85,26 +281,26 @@
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'>{
-</span><span class='line'>  &quot;version&quot;: &quot;1.0.0-*&quot;,
-</span><span class='line'>  &quot;buildOptions&quot;: {
-</span><span class='line'>    &quot;debugType&quot;: &quot;portable&quot;,
-</span><span class='line'>    &quot;emitEntryPoint&quot;: true
-</span><span class='line'>  },
-</span><span class='line'>  &quot;dependencies&quot;: {},
-</span><span class='line'>  &quot;frameworks&quot;: {
-</span><span class='line'>    &quot;netcoreapp1.0&quot;: {
-</span><span class='line'>      &quot;dependencies&quot;: {
-</span><span class='line'>        &quot;Microsoft.NETCore.App&quot;: {
-</span><span class='line'>          &quot;type&quot;: &quot;platform&quot;,
-</span><span class='line'>          &quot;version&quot;: &quot;1.0.0&quot;
-</span><span class='line'>        },
-</span><span class='line'>        &quot;Microsoft.AspNetCore.Server.Kestrel&quot;: &quot;1.0.0&quot;
-</span><span class='line'>      },
-</span><span class='line'>      &quot;imports&quot;: &quot;dnxcore50&quot;
-</span><span class='line'>    }
-</span><span class='line'>  }
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0-*&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;buildOptions&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;debugType&quot;</span><span class="p">:</span> <span class="s2">&quot;portable&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;emitEntryPoint&quot;</span><span class="p">:</span> <span class="kc">true</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nt">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">{},</span>
+</span><span class='line'>  <span class="nt">&quot;frameworks&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;netcoreapp1.0&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;Microsoft.NETCore.App&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;platform&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;Microsoft.AspNetCore.Server.Kestrel&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nt">&quot;imports&quot;</span><span class="p">:</span> <span class="s2">&quot;dnxcore50&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

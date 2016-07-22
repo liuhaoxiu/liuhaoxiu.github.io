@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>刘浩的技术博客</title>
+  <title>处理APP状态转换的策略 - 刘浩的技术博客</title>
   <meta name="author" content="刘浩">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://liuhaoxiu.github.io/">
+  <link rel="canonical" href="http://liuhaoxiu.github.io/blog/2016/07/22/chu-li-appzhuang-tai-zhuan-huan-de-ce-lue/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="刘浩的技术博客" type="application/atom+xml">
@@ -63,15 +63,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/07/22/chu-li-appzhuang-tai-zhuan-huan-de-ce-lue/">处理APP状态转换的策略</a></h1>
+      <h1 class="entry-title">处理APP状态转换的策略</h1>
     
     
       <p class="meta">
@@ -87,7 +84,7 @@
   </header>
 
 
-  <div class="entry-content"><h1>处理APP状态转换的策略(Strategies for Handling App State Transitions)</h1>
+<div class="entry-content"><h1>处理APP状态转换的策略(Strategies for Handling App State Transitions)</h1>
 
 <p>  对于每一个APP可能的运行时状态，你的APP在进入每一个状态的时候系统都有不同的预期。但状态迁移发生时，系统通知这个APP对象，这个APP对象通知它自己的代理对象。你能使用<code>UIApplicationDelegate</code>协议的状态迁移方法去发现这些状态的改变和作出适当的响应。</p>
 
@@ -276,18 +273,59 @@
 <p>每个APP在马上进入后台时应该释放许多的内存这种做法是实用的。系统在同一时间视图保持许多的APP在内存里当它可以能够如此的话，但是当内存运行比较低的时候系统会终止挂起的APP来回收内存。当在后台期间APP消耗大量的内存那么它会第一个被终止。
 实际上来说，当你的APP不在对这个对象需要时你的APP应该移除对这个对象的强引用，移除强引用给编译器有能力去立即释放这个对象，如此相应的内存能够回收。无论如何，如果你想去缓存一些对象去改善性能，你能等到直到APP迁移到后台以前移除对这些对象的引用。</p>
 </div>
-  
-  
 
 
-    </article>
-   
-  <div class="pagination">
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘浩</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-07-22T16:01:54+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2016</span></span> <span class='time'>4:01 pm</span></time>
+      
+
+
+    </p>
     
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+      <div class="sharing">
+  
+  
+  
+  
+    <div class="jiathis_style">
+	<span class="jiathis_txt">分享到：</span>
+	<a class="jiathis_button_qzone">QQ空间</a>
+	<a class="jiathis_button_tsina">新浪微博</a>
+	<a class="jiathis_button_tqq">腾讯微博</a>
+	<a class="jiathis_button_weixin">微信</a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+	<a class="jiathis_counter_style"></a>
 </div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2106548"></script>
+
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/07/21/zai-macshang-an-zhuang-visual-studio-codekai-fa-asp-dot-netying-yong-cheng-xu/" title="Previous Post: 在Mac上安装Visual Studio Code开发Asp.Net应用程序">&laquo; 在Mac上安装Visual Studio Code开发Asp.Net应用程序</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -323,6 +361,7 @@
 
   
 </aside>
+
 
     </div>
   </div>
