@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-07-22T16:26:37+08:00</updated>
+  <updated>2016-07-22T16:37:00+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -31,7 +31,7 @@
 <li>初始化你的APP关键的数据结构。</li>
 <li><p>准备你的APP作为显示的窗体(window)和视图(views)</p>
 
-<p>在启动时间，系统自动加载你的APP的主故事板(storyboard)文件和加载初始的视图控制器(view controller)。关于APP支持的状态恢复，在调用<code>application:willFinishLaunchingWithOptions:</code>和 <code>application:didFinishLaunchingWithOptions:</code>方法中间，APP状态恢复机械的恢复你的界面到以前的状态。使用<code>application:willFinishLaunchingWithOptions:</code>方法去显示你的APP窗体(window)和去确定状态恢复是否全部发生。使用<code>application:didFinishLaunchingWithOptions:</code>方法去对你的APP界面做最后的调整。</p>
+<p>在启动时间，系统自动加载你的APP的主故事板(storyboard)文件和加载初始的视图控制器(view controller)。关于APP支持的状态恢复，在调用<code>application:willFinishLaunchingWithOptions:</code>和<code>application:didFinishLaunchingWithOptions:</code>方法中间，APP状态恢复机械的恢复你的界面到以前的状态。使用<code>application:willFinishLaunchingWithOptions:</code>方法去显示你的APP窗体(window)和去确定状态恢复是否全部发生。使用<code>application:didFinishLaunchingWithOptions:</code>方法去对你的APP界面做最后的调整。</p>
 
 <p>你的<code>application:willFinishLaunchingWithOptions:</code>和<code>application:didFinishLaunchingWithOptions:</code>方法中应该做尽可能少的事情去减少你的APP的启动时间。APP是预期去启动初始化它们自己并在五秒之内开始处理事件。如果一个APP没有及时的结束它的启动周期，系统会终止它。所以，任何可能减慢你的启动的任务(例如访问网络)应该安排它执行在一个次要的线程上。</p></li>
 </ul>
@@ -50,11 +50,12 @@
 <ul>
 <li> 添加<code>UIInterfaceOrientation</code>键到你的APP的<code>Info.plist</code>文件，设置这个键的值为 <code>UIInterfaceOrientationLandscapeLeft</code>或者<code>UIInterfaceOrientationLandscapeRight</code>其中一个。</li>
 <li> 布局你的视图在横屏模式，确保它们的布局或者自动尺寸选项是设置正确的。</li>
-<li> 覆盖你的视图控制器的<code>shouldAutorotateToInterfaceOrientation:</code>方法，当旋转到横屏方向的left或者right时返回YES，当旋转到竖屏方向是返回NO。</li>
+<li><p> 覆盖你的视图控制器的<code>shouldAutorotateToInterfaceOrientation:</code>方法，当旋转到横屏方向的left或者right时返回YES，当旋转到竖屏方向是返回NO。</p>
+
+<pre><code>    Important:APP应该总是使用视图控制器去管理它们基于窗口的内容
+</code></pre></li>
 </ul>
 
-
-<p><code>Important:APP应该总是使用视图控制器去管理它们基于窗口的内容</code></p>
 
 <p>  这个<code>UIInterfaceOrientation</code>键在<code>Info.plist</code>文件告诉iOS它应该配置APP的状态栏的方向(如果有一个显示的)此外通过视图控制器在启动时间管理视图的方向。视图控制器考虑这个键然后设置他们的视图的初始方向去匹配。使用这个键等同于在早期的 <code>applicationDidFinishLaunching:</code>方法中调用UIApplication对象的<code>setStatusBarOrientation:animated:</code>方法。</p>
 
@@ -83,7 +84,9 @@
 
 <p> 当用户按压休眠/唤醒按钮，APP设置了<code>NSFileProtectionComplete</code>保护选项保护文件，这时必须关闭所有对这些文件的引用。设备配置一个适当的密码，按压休眠/唤醒按钮锁定屏幕会强制系统扔掉文件的解密秘钥使其能起到完整的保护。在这个屏幕锁定期间，任何企图去访问相应的文件将失败。如此如果你有这样的文件，你应该在你的<code>applicationWillResignActive:</code>方法中关闭任何对这些文件的引用和在你的<code>applicationDidBecomeActive:</code>方法中打开新的引用。</p>
 
-<pre><code>    Important:总是在你的APP的适当的检查点保存数据，尽管你能使用APP状态迁移去强制对象去写未保        存的数据到磁盘，但是绝不等到一个APP的状态迁移去保存数据。例如，一个视图控制器管理用户数据应     该在它离开(dismissed)时保存数据
+<pre><code>    Important:总是在你的APP的适当的检查点保存数据，尽管你能使用APP状态迁移去强制对象去写未保
+    存的数据到磁盘，但是绝不等到一个APP的状态迁移去保存数据。例如，一个视图控制器管理用户数据应
+    该在它离开(dismissed)时保存数据
 </code></pre>
 
 <h3>暂时中断的响应(Responding to Temporary Interruptions)</h3>
@@ -98,12 +101,13 @@
 
 <p>返回到前台状态你的APP有机会去重新启动在它移动到后台时停止的任务。</p>
 
-<pre><code>    Note:当你的APP重新进入前台这个UIApplicationWillEnterForegroundNotification通知是      可以获得的。在你的APP里的对象可以去使用默认的通知中心注册这个通知。
+<pre><code>Note:当你的APP重新进入前台这个UIApplicationWillEnterForegroundNotification
+通知是可以获得的。在你的APP里的对象可以去使用默认的通知中心注册这个通知。
 </code></pre>
 
 <h3>准备处理排队通知(Be Prepared to Process Queued Notifications)</h3>
 
-<p>一个APP在挂起状态当它返回到前台或者后台执行状态时必须准备好去处理任何排队通知。一个挂起的APP不处理任何代码，因此也不能处理通知相关方向的改变，时间的变化，偏好的变化，和许多会影响APP外观和状态的变化。确保这些改变没有丢失，系统排队了许多相关的通知，直到APP再一次开始执行代码才交付这些通知给APP（前台或者后台任意一个状态）。为了防止当APP恢复时通知过多时APP发生过载，系统合并事件（每一个相关的事件），这些事件反映的是是你的APP自暂停以来的净变化(net change).</p>
+<p>  一个APP在挂起状态当它返回到前台或者后台执行状态时必须准备好去处理任何排队通知。一个挂起的APP不处理任何代码，因此也不能处理通知相关方向的改变，时间的变化，偏好的变化，和许多会影响APP外观和状态的变化。确保这些改变没有丢失，系统排队了许多相关的通知，直到APP再一次开始执行代码才交付这些通知给APP（前台或者后台任意一个状态）。为了防止当APP恢复时通知过多时APP发生过载，系统合并事件（每一个相关的事件），这些事件反映的是是你的APP自暂停以来的净变化(net change).</p>
 
 <p>下表中的通知可以合并和交付到你的APP的。大部分这些通知是直接交付到你注册的观察者。像这些与设备方向改变相关的，是典型的通过系统框架拦截然后用另外的方法交付给你的APP。</p>
 
@@ -119,49 +123,29 @@
 <td> 一个配件连接或者断开连接          </td>
 <td style="text-align:center;"> EAAccessoryDidConnectNotification与EAAccessoryDidDisconnectNotification </td>
 </tr>
-<tr>
-<td>设备方向改变                     </td>
-<td style="text-align:center;"> UIDeviceOrientationDidChangeNotification除了这个通知，视图控制器自动的更新他们的界面方向 </td>
-</tr>
-<tr>
-<td>一个有重大意义(significant)的时间变化</td>
-<td style="text-align:center;">UIApplicationSignificantTimeChangeNotification</td>
-</tr>
-<tr>
-<td>电池电量等级改变(The battery level)或者电池状态改变</td>
-<td style="text-align:center;">UIDeviceBatteryLevelDidChangeNotification与UIDeviceBatteryStateDidChangeNotification</td>
-</tr>
-<tr>
-<td>接近状态改变(例如接近传感器)</td>
-<td style="text-align:center;">UIDeviceProximityStateDidChangeNotification</td>
-</tr>
-<tr>
-<td>文件保护状态改变</td>
-<td style="text-align:center;">UIApplicationProtectedDataWillBecomeUnavailable与UIApplicationProtectedDataDidBecomeAvailable</td>
-</tr>
-<tr>
-<td>一个外部的显示连接或者断开连接</td>
-<td style="text-align:center;">UIScreenDidConnectNotification与UIScreenDidDisconnectNotification</td>
-</tr>
-<tr>
-<td>屏幕显示模式改变</td>
-<td style="text-align:center;">UIScreenModeDidChangeNotification</td>
-</tr>
-<tr>
-<td>你的APP偏好通过Settings app暴露出来被更改</td>
-<td style="text-align:center;">NSUserDefaultsDidChangeNotification</td>
-</tr>
-<tr>
-<td>当前语言或者区域设置改变</td>
-<td style="text-align:center;">NSCurrentLocaleDidChangeNotification</td>
-</tr>
-<tr>
-<td>用户的云账户状态改变</td>
-<td style="text-align:center;">NSUbiquityIdentityDidChangeNotification</td>
-</tr>
 </tbody>
 </table>
 
+
+<p>|设备方向改变                     | UIDeviceOrientationDidChangeNotification除了这个通知，视图控制器自动的更新他们的界面方向 |</p>
+
+<p>|一个有重大意义(significant)的时间变化|UIApplicationSignificantTimeChangeNotification|</p>
+
+<p>|电池电量等级改变(The battery level)或者电池状态改变|UIDeviceBatteryLevelDidChangeNotification与UIDeviceBatteryStateDidChangeNotification|</p>
+
+<p>|接近状态改变(例如接近传感器)|UIDeviceProximityStateDidChangeNotification|</p>
+
+<p>|文件保护状态改变|UIApplicationProtectedDataWillBecomeUnavailable与UIApplicationProtectedDataDidBecomeAvailable|</p>
+
+<p>|一个外部的显示连接或者断开连接|UIScreenDidConnectNotification与UIScreenDidDisconnectNotification|</p>
+
+<p>|屏幕显示模式改变|UIScreenModeDidChangeNotification|</p>
+
+<p>|你的APP偏好通过Settings app暴露出来被更改|NSUserDefaultsDidChangeNotification|</p>
+
+<p>|当前语言或者区域设置改变|NSCurrentLocaleDidChangeNotification|</p>
+
+<p>|用户的云账户状态改变|NSUbiquityIdentityDidChangeNotification|</p>
 
 <p>  排队通知是交付到你的APP的主运行循环(run loop)并且通常是交付在任何触摸事件或者另外的用户输入以前。大部分APP应该尽可能足够快的去处理这些事件那样在恢复时才将不会引起任何明显的滞后。无论如何，当你的APP从后台状态返回如果它出现了迟钝，使用Instruments去确定是是否你的通知处理代码引起了延迟。
   一个APP返回到前台同样接收任何视图的视图更新通知，这些是自从最后一次更新以来需要重新更新的视图。一个APP运行在后台任然可以调用<code>setNeedsDisplay或setNeedsDisplayInRect:</code>方法去请求视图的更新。因外这个视图没有显示，系统合并这些请求当APP返回到前台后更新。</p>
@@ -193,7 +177,10 @@
 
 <p>你的APP代理<code>applicationDidEnterBackground</code>方法有大约五秒钟去结束任何未完成的任务然后返回，事实上，这个方法应该尽可能快的返回。如果这个方法在时间耗尽以前还没有返回，你的APP会被终止占用的内存会被释放。如果你任然需要更多的时间去执行任务，调用<code>beginBackgroundTaskWithExpirationHandler</code>方法去请求更多的后台执行时间，还有就是开启一个长运行任务在次要的线程。不管你是否启动任何后台任务，<code>applicationDidEnterBackground</code>方法在五秒钟之内任然必须退出。</p>
 
-<p><code>Note:系统除了调用applicationDidEnterBackground方法之外还发送 UIApplicationDidEnterBackgroundNotification通知，你可以使用这个通知去分布清理任务到你的APP的另外的对象</code></p>
+<pre><code>    Note:系统除了调用applicationDidEnterBackground方法之外还发送
+    UIApplicationDidEnterBackgroundNotification通知，你可以使用这个通知去分布清理任
+    务到你的APP的另外的对象
+</code></pre>
 
 <h3>后台迁移周期(The Background Transition Cycle)</h3>
 
