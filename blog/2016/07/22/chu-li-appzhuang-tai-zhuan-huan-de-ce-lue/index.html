@@ -180,38 +180,58 @@
 <table>
 <thead>
 <tr>
-<th>                    事件       </th>
-<th style="text-align:center;">                  通知                           </th>
+<th>事件 </th>
+<th> 通知</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td> 一个配件连接或者断开连接          </td>
-<td style="text-align:center;"> EAAccessoryDidConnectNotification与EAAccessoryDidDisconnectNotification </td>
+<td>一个配件连接或者断开连接 </td>
+<td> EAAccessoryDidConnectNotification与EAAccessoryDidDisconnectNotification</td>
+</tr>
+<tr>
+<td>设备方向改变 </td>
+<td> UIDeviceOrientationDidChangeNotification除了这个通知，视图控制器自动的更新他们的界面方向</td>
+</tr>
+<tr>
+<td>一个有重大意义(significant)的时间变化 </td>
+<td> UIApplicationSignificantTimeChangeNotification</td>
+</tr>
+<tr>
+<td>电池电量等级改变(The battery level)或者电池状态改变 </td>
+<td> UIDeviceBatteryLevelDidChangeNotification与UIDeviceBatteryStateDidChangeNotification</td>
+</tr>
+<tr>
+<td>接近状态改变(例如接近传感器) </td>
+<td> UIDeviceProximityStateDidChangeNotification</td>
+</tr>
+<tr>
+<td>文件保护状态改变 </td>
+<td> UIApplicationProtectedDataWillBecomeUnavailable与UIApplicationProtectedDataDidBecomeAvailable</td>
+</tr>
+<tr>
+<td>一个外部的显示连接或者断开连接 </td>
+<td> UIScreenDidConnectNotification与UIScreenDidDisconnectNotification</td>
+</tr>
+<tr>
+<td>屏幕显示模式改变 </td>
+<td> UIScreenModeDidChangeNotification</td>
+</tr>
+<tr>
+<td>你的APP偏好通过Settings app暴露出来被更改 </td>
+<td> NSUserDefaultsDidChangeNotification</td>
+</tr>
+<tr>
+<td>当前语言或者区域设置改变 </td>
+<td> NSCurrentLocaleDidChangeNotification</td>
+</tr>
+<tr>
+<td>用户的云账户状态改变 </td>
+<td> NSUbiquityIdentityDidChangeNotification</td>
 </tr>
 </tbody>
 </table>
 
-
-<p>|设备方向改变                     | UIDeviceOrientationDidChangeNotification除了这个通知，视图控制器自动的更新他们的界面方向 |</p>
-
-<p>|一个有重大意义(significant)的时间变化|UIApplicationSignificantTimeChangeNotification|</p>
-
-<p>|电池电量等级改变(The battery level)或者电池状态改变|UIDeviceBatteryLevelDidChangeNotification与UIDeviceBatteryStateDidChangeNotification|</p>
-
-<p>|接近状态改变(例如接近传感器)|UIDeviceProximityStateDidChangeNotification|</p>
-
-<p>|文件保护状态改变|UIApplicationProtectedDataWillBecomeUnavailable与UIApplicationProtectedDataDidBecomeAvailable|</p>
-
-<p>|一个外部的显示连接或者断开连接|UIScreenDidConnectNotification与UIScreenDidDisconnectNotification|</p>
-
-<p>|屏幕显示模式改变|UIScreenModeDidChangeNotification|</p>
-
-<p>|你的APP偏好通过Settings app暴露出来被更改|NSUserDefaultsDidChangeNotification|</p>
-
-<p>|当前语言或者区域设置改变|NSCurrentLocaleDidChangeNotification|</p>
-
-<p>|用户的云账户状态改变|NSUbiquityIdentityDidChangeNotification|</p>
 
 <p>  排队通知是交付到你的APP的主运行循环(run loop)并且通常是交付在任何触摸事件或者另外的用户输入以前。大部分APP应该尽可能足够快的去处理这些事件那样在恢复时才将不会引起任何明显的滞后。无论如何，当你的APP从后台状态返回如果它出现了迟钝，使用Instruments去确定是是否你的通知处理代码引起了延迟。
   一个APP返回到前台同样接收任何视图的视图更新通知，这些是自从最后一次更新以来需要重新更新的视图。一个APP运行在后台任然可以调用<code>setNeedsDisplay或setNeedsDisplayInRect:</code>方法去请求视图的更新。因外这个视图没有显示，系统合并这些请求当APP返回到前台后更新。</p>
