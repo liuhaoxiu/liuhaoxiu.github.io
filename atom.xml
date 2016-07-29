@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-07-22T16:37:00+08:00</updated>
+  <updated>2016-07-29T15:14:45+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -12,6 +12,50 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[用工具规范OC代码样式]]></title>
+    <link href="http://liuhaoxiu.github.io/blog/2016/07/29/yong-gong-ju-gui-fan-ocdai-ma-yang-shi/"/>
+    <updated>2016-07-29T15:13:14+08:00</updated>
+    <id>http://liuhaoxiu.github.io/blog/2016/07/29/yong-gong-ju-gui-fan-ocdai-ma-yang-shi</id>
+    <content type="html"><![CDATA[<h1>规范OC代码样式</h1>
+
+<p>在团队开发过程中，可能你team里面的每个成员都有自己不同的代码风格，其实代码风格到不是一定要很规范，但是一定要很统一，这样整体的代码在是视觉上就不会显得很混乱，而且互相阅读代码的时候也会很自然。这篇文章是来安装适当的工具强制team成员形成统一的代码样式。</p>
+
+<h2>安装Xcode插件用于格式化你的代码到相应的范式</h2>
+
+<p><a href="https://github.com/benoitsan/BBUncrustifyPlugin-Xcode">这里</a>这里有一个插件，安装完后你就可以在Xcode的菜单中找到响应的格式化命令了。安装可以选择在终端运行<code>curl -SL https://raw.githubusercontent.com/benoitsan/BBUncrustifyPlugin-Xcode/master/install.sh | sh</code>自动下载安装。(也可以使用插件目录中提到的另外两种安装方法)</p>
+
+<p>安装完成后，如果重启Xcode可以看到菜单<code>Edit &gt; Format Code</code>中的以下命令：</p>
+
+<ol>
+<li>使用<code>Format Selected Files</code>去格式化在项目导航中选定的文件。</li>
+<li>使用<code>Format Active File</code>去格式化在编辑器中实际打开的文件。</li>
+<li>使用<code>Format Selected Lines</code>去格式化选中的代码行(多行选中时支持的)。如果选中的行没有满选会自动扩展的整行，如果没有选中任何行，就会使用光标下的行作为格式化。</li>
+<li>使用<code>Edit Configuration</code>在一个额外的编辑器去配置这个格式化程序。</li>
+<li>使用<code>BBUncrustifyPlugin Preferences</code>去改变插件参数配置。</li>
+</ol>
+
+
+<h2>UncrustifyX可视化配置你的代码规范</h2>
+
+<p>你想要的代码规范是怎么样的，你可以参考<a href="http://uncrustify.sourceforge.net/">这里</a>去直接编辑文件设置你要的格式，你也可以使用UncrustifyX这个可视化工具配置，推荐后者，这样会有感官。你可以到<a href="https://github.com/ryanmaxwell/UncrustifyX/releases">这里</a>下载最新版本安装。</p>
+
+<h2>git commit hooks(这里使用Git版本控制)</h2>
+
+<p><a href="https://github.com/githubbrowser/Pre-commit-hooks">这里</a>有已经写好的<code>pre-commit-uncrustify(rename为pre-commit)</code>、<code>canonicalize_filename.sh(一个定位路径输出的文件)</code>可以下载，把这个两个文件<code>copy</code>到你的本地项目仓库的<code>.git/hooks</code>文件夹下面,值此就可以生效了，不过别忘了做一下配置，像如下的：</p>
+
+<ol>
+<li>设置uncrustify的路径像我这里的的路径为<code>/Applications/UncrustifyX.app/Contents/Resources/uncrustify</code>.</li>
+<li>设置uncrustify配置位置，我这里路径为<code>$HOME/.uncrustify/uncrustify.cfg</code>.</li>
+</ol>
+
+
+<h2>git receive hooks</h2>
+
+<p><code>commit</code>可能还不能满足要求，我们为了统一代码规范，需要在<code>git</code>服务端检查，规范不符合我们团队的我们就拒绝<code>push</code>,所以需要在<code>receive</code>的时候也触发调用。<a href="">这里</a>这里有我自己参考资料改的一个<code>pre-receive</code>文件可以达到上述要求，你下载完成后把<code>pre-receive</code>、<code>canonicalize_filename.sh</code>一并<code>copy</code>到服务端你的项目仓库的hooks目录下面,至此就会生效了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[处理APP状态转换的策略]]></title>
