@@ -358,7 +358,7 @@ UIkit只保存已经分配了恢复标识的对象。一个恢复标识是一个
 
 <p>如果你选择去使用恢复类，你实现<code>viewControllerWithRestorationIdentifierPath:coder:</code>方法应该创建恢复类的一个新实例，执行一些最小的初始化，返回所得的对象。以下代码是一个例子显示了你可能如何使用这个方法去从一个<code>storyboard</code>加载一个视图控制器。因为视图控制器是最初从<code>storyboard</code>加载的，这个方法使用<code>UIStateRestorationViewControllerStoryboardKey</code>键去获得来自档案文件(归档)的<code>storyboard</code>。注意此方法不试图去配置这个视图控制器的数据字段。当视图控制状态解码后这一步会发生。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -369,7 +369,7 @@ UIkit只保存已经分配了恢复标识的对象。一个恢复标识是一个
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="bp">UIViewController</span><span class="o">*</span><span class="p">)</span> <span class="nf">viewControllerWithRestorationIdentifierPath:</span><span class="p">(</span><span class="bp">NSArray</span> <span class="o">*</span><span class="p">)</span><span class="nv">identifierComponents</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="bp">UIViewController</span><span class="o">*</span><span class="p">)</span> <span class="nf">viewControllerWithRestorationIdentifierPath:</span><span class="p">(</span><span class="bp">NSArray</span> <span class="o">*</span><span class="p">)</span><span class="nv">identifierComponents</span>
 </span><span class='line'>                      <span class="nf">coder:</span><span class="p">(</span><span class="bp">NSCoder</span> <span class="o">*</span><span class="p">)</span><span class="nv">coder</span> <span class="p">{</span>
 </span><span class='line'>   <span class="n">MyViewController</span><span class="o">*</span> <span class="n">vc</span><span class="p">;</span>
 </span><span class='line'>   <span class="bp">UIStoryboard</span><span class="o">*</span> <span class="n">sb</span> <span class="o">=</span> <span class="p">[</span><span class="n">coder</span> <span class="nl">decodeObjectForKey</span><span class="p">:</span><span class="n">UIStateRestorationViewControllerStoryboardKey</span><span class="p">];</span>
