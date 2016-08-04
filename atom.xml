@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-08-04T16:28:33+08:00</updated>
+  <updated>2016-08-04T16:34:17+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -484,7 +484,8 @@ UIkit只保存已经分配了恢复标识的对象。一个恢复标识是一个
 </ul>
 
 
-<p><img src="http://liuhaoxiu.github.io/images/state_vc_hierarchy_preserve.png" alt="图片" /></p>
+<p><img src="http://liuhaoxiu.github.io/images/state_vc_hierarchy_preserve.png" alt="图片" />
+<img src="http://liuhaoxiu.github.io/images/state_vc_hierarchy_preserve.png"></p>
 ]]></content>
   </entry>
   
