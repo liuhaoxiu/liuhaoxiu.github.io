@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-08-03T16:56:18+08:00</updated>
+  <updated>2016-08-04T16:23:22+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -483,6 +483,8 @@ UIkit只保存已经分配了恢复标识的对象。一个恢复标识是一个
 <li>当用户强制退出这个APP时系统自动删除APP保存的状态。当APP被终结(<code>killed</code>)时删除保存的状态信息是一个安全的预防措施。(作为一种安全的预防措施，如果APP在启动期间崩溃两次系统同样删除保存的状态)，如果你想去测试你的APP恢复状态的能力，在调试时(<code>debugging</code>)你不应该使用多任务栏(<code>multitasking bar</code>)去终结这个APP。作为替代，使用<code>Xcode</code>去<code>Kill</code>这个APP或者通过安装一个临时命令以编程的方式<code>kill</code>这个APP或者手势去调用<code>exit</code>根据需要.</li>
 </ul>
 
+
+<p><img src="state_vc_hierarchy_preserve.png" alt="图片" /></p>
 ]]></content>
   </entry>
   
