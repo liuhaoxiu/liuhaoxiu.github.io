@@ -234,7 +234,7 @@
 
 <p>状态保存和恢复是一个可选的特性，工作需要你的APP的帮助。你的APP标识应该保存的对象，UIKit在合适的时间去做保存和恢复这些对象的工作，因为UIKit处理这么多的过程，它帮你你去明白他在幕后做了什么，如此你知道如何实现你的自定义代码去契合这个总体的方案。</p>
 
-<p>当思考关于状态保存和恢复时，它首先帮助你去分离这两个过程。UIkit在适当的时间保存你的APP状态，例如当你APP从前台移动到后天的时候。当UIkit确定新的状态信息是必要的时候，它审视你的APP视图和视图控制去看哪一个应该被保存。关于这些对象的每一个，UIkit写保存相关的数据到一个磁盘上的加密文件。在下次你的APP重新开始启动，UIkit找到这个文件，如果它是存在的，使用它去尝试恢复你的APP状态。因为这个文件是加密的，只有在这个设备解锁的状态下状态保存和恢复才会发生。</p>
+<p>当思考关于状态保存和恢复时，它首先帮助你去分离这两个过程。UIkit在适当的时间保存你的APP状态，例如当你APP从前台移动到后台的时候。当UIkit确定新的状态信息是必要的时候，它审视你的APP视图和视图控制去看哪一个应该被保存。关于这些对象的每一个，UIkit写保存相关的数据到一个磁盘上的加密文件。在下次你的APP重新开始启动，UIkit找到这个文件，如果它是存在的，使用它去尝试恢复你的APP状态。因为这个文件是加密的，只有在这个设备解锁的状态下状态保存和恢复才会发生。</p>
 
 <p>在恢复过程期间，UIkit使用保存数据去重新构造你的界面但是实际对象的创造是通过你的代码操作的。因为你的APP可能自动加载一个对象来自<code>storyboard</code>文件，只有你的代码知道哪一个对象需要去创建和哪一个可能已经存在能够简单的返回。创建每一个对象之后，UIkit用保存的状态信息初始化它们。</p>
 
@@ -605,6 +605,8 @@ UIkit只保存已经分配了恢复标识的对象。一个恢复标识是一个
         <a class="basic-alignment left" href="/blog/2016/07/29/yong-gong-ju-gui-fan-ocdai-ma-yang-shi/" title="Previous Post: 用工具规范OC代码样式">&laquo; 用工具规范OC代码样式</a>
       
       
+        <a class="basic-alignment right" href="/blog/2016/08/10/uiviewdong-hua-kuai-zhan-yong-zhu-xian-cheng-bu/" title="Next Post: UIView动画块占用主线程不">UIView动画块占用主线程不 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -616,6 +618,10 @@ UIkit只保存已经分配了恢复标识的对象。一个恢复标识是一个
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/10/uiviewdong-hua-kuai-zhan-yong-zhu-xian-cheng-bu/">UIView动画块占用主线程不</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/08/03/shi-xian-du-te-appte-xing-de-ce-lue/">实现独特APP特性的策略</a>
