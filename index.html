@@ -182,10 +182,15 @@ CFBundleURLSchemes | 一个字符串数组，用于包含URL方案名，例如�
 </ul>
 
 
-<p>当一个URL请求到达时你的APP没有运行，APP会启动和移动到前台，这样它能够打开这个URL。你的<code>application:willFinishLaunchingWithOptions:</code>或者<code>application:didFinishLaunchingWithOptions:</code>的实现应该从他的<code>options</code>字典寻找URL和确定是否APP能够打开它。如果它能，返回<code>YES</code>和让你的<code>application:openURL:sourceApplication:annotation:</code>(或者<code>application:handleOpenURL:</code>)方法操作这个实际的URL打开。(如果你实现了这两个方法，这两个方法必须都返回<code>YES</code>之前的网址才能打开.)图6-1显示一个APP被请求去打开一个URL的启动顺序。
+<p>当一个URL请求到达时你的APP没有运行，APP会启动和移动到前台，这样它能够打开这个URL。你的<code>application:willFinishLaunchingWithOptions:</code>或者<code>application:didFinishLaunchingWithOptions:</code>的实现应该从他的<code>options</code>字典寻找URL和确定是否APP能够打开它。如果它能，返回<code>YES</code>和让你的<code>application:openURL:sourceApplication:annotation:</code>(或者<code>application:handleOpenURL:</code>)方法操作这个实际的URL打开。(如果你实现了这两个方法，这两个方法必须都返回<code>YES</code>之前的网址才能打开.)</p>
+
+<p>图6-1 一个APP被请求去打开一个URL的启动顺序。
 <img src="/images/app_open_url_2x.png" width="612" height="807"></p>
 
 <p>当一个URL请求到达时，如果你的APP是运行在后台或者是暂停(挂起)的，它将迁移回前台去打开这个URL。在这之后不久，系统调用代理<code>application:openURL:sourceApplication:annotation:</code>方法去检查URL和打开它。</p>
+
+<p>图6-2 移动APP到到前台去打开一个URL的过程
+<img src="/images/app_bg_open_url_2x.png" width="612" height="807"></p>
 
 <p><code>Note:支持自定义URL方案的APP当启动这个APP去处理一个不同方案的URL时能够指定不同的启动图片去显示</code>
 所有的URLs都通过一个<code>NSURL</code>对象传递到你的APP。它是由你去定义的URL格式，但是<code>NSURL</code>类遵循<code>RFC 1808</code>规范因此支持大部分的URL格式协议。这个类包含的方法返回有<code>RFC 1808</code>定义的URL的不同部分，包括用户，密码，查询，片段，和参数字符串。你的自定义方案的协议(<code>protocol</code>)能使用这些URL部分传送不同种类的信息。</p>
