@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-08-11T10:34:21+08:00</updated>
+  <updated>2016-08-12T11:07:43+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -12,6 +12,422 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[APP间通信与APP性能技巧]]></title>
+    <link href="http://liuhaoxiu.github.io/blog/2016/08/12/appjian-tong-xin-yu-appxing-neng-ji-qiao/"/>
+    <updated>2016-08-12T11:05:56+08:00</updated>
+    <id>http://liuhaoxiu.github.io/blog/2016/08/12/appjian-tong-xin-yu-appxing-neng-ji-qiao</id>
+    <content type="html"><![CDATA[<h1>APP间通信(Inter-App Communication)</h1>
+
+<p>在一个设备APP间只能间接的通信。你能使用<code>AirDrop</code>去分享文件和数据给另外一个APP。你能同样定义一个自定义<code>URL</code>方案，如此另外的APP能够使用<code>URLs</code>发送信息到你的APP。</p>
+
+<p><code>Note:你能同样使用UIDocumentInteractionController对象或者一个文档选择器(document picker)在APP中间发送文件。</code></p>
+
+<h2>支持AirDrop(Supporting AirDrop)</h2>
+
+<p><code>AirDrop</code>让你分享照片，文档，URLs,和另外的数据类型给你附近的设备。<code>AirDrop</code>采用点对点(<code>peer-to-peer</code>)的网络去寻找附近的设备和连接到它们。</p>
+
+<h3>发送图片和数据到另外的APP(Sending Files and Data to Another App)</h3>
+
+<p>去使用<code>AirDrop</code>发送文件和数据，使用<code>UIActivityViewController</code>去在你的用户界面显示一个活动的层。当创建这个视图控制器时，你指定你想去分享的数据对象。这个视图控制器只显示支持指定数据的那些活动。关于<code>AirDrop</code>你能指定图片，字符串，<code>URLs</code>和几个另外的数据类型。你同样能传递遵循了<code>UIActivityItemSource</code>协议的自定义对象。</p>
+
+<p>去显示一个活动的视图控制器，你能使用如下所示代码那样。这个活动的视图控制器自动使用指定的数据去确定显示在一个活动层中的活动是什么。你不用去明确的去指定这个<code>AirDrop</code>活动。你能使用这个视图控制器的<code>excludedActivityTypes</code>属性阻止显示指定的类型在这个层上。当你显示一个活动视图控制器在<code>iPad</code>的上，你必须使用<code>popover</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">displayActivityControllerWithDataObject:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">obj</span> <span class="p">{</span>
+</span><span class='line'>   <span class="bp">UIActivityViewController</span><span class="o">*</span> <span class="n">vc</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIActivityViewController</span> <span class="n">alloc</span><span class="p">]</span>
+</span><span class='line'>                                <span class="nl">initWithActivityItems</span><span class="p">:</span><span class="l">@[</span><span class="n">obj</span><span class="l">]</span> <span class="nl">applicationActivities</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="nl">presentViewController</span><span class="p">:</span><span class="n">vc</span> <span class="nl">animated</span><span class="p">:</span><span class="nb">YES</span> <span class="nl">completion</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>接收发送到你APP的文件和数据(Receiving Files and Data Sent to Your App)</h3>
+
+<p>接收使用<code>AirDrop</code>发送到你APP的文件，做以下：</p>
+
+<ul>
+<li>在<code>Xcode</code>里面，声明你APP能够打开的文档类型。</li>
+<li>在你的APP代理里，实现<code>application:openURL:sourceApplication:annotation:</code>方法.使用这个方法去接收通过另外的APP发送过来的数据。</li>
+<li>准备好在你的APP的<code>Documents/Inbox</code>目录查询文件，根据需要移动它们出这个目录。</li>
+</ul>
+
+
+<p>你的Xcode项目<code>Info tab</code>包含了一个文档类型块给你指定你APP支持的文档类型。最低限度，你必须对于文档类型指定一个名称和一个或多个表示数据类型的<code>UTIs</code>。例子，去声明支持<code>PNG</code>文件，你将包含<code>public.png</code>作为<code>UTI</code>字符串。iOS使用指定的<code>UTIs</code>去确定你的APP是否有资格打开给定的文档。
+将一个合格的文档传送到你的APP容器之后，iOS启动你的APP(如果需要)和调用你APP代理的<code>application:openURL:sourceApplication:annotation:</code>方法。如果你的APP在前台，你将使用这个方法去打开这个文件和显示它给你的用户。如果你的APP在后台，你可能只决定去标记这个文件在哪里然后你可以之后去打开它。因为通过<code>AirDrop</code>传输的文件是通过数据保护加密的，所以除非设备当前是未锁定的要么你不能够打开这个文件。</p>
+
+<p>使用<code>AirDrop</code>传输到你的APP的文件是放置在你的APP的<code>Documents/Inbox</code>目录。你APP有权限去读和删除在这个目录里面的文件但是它没有权限去写在目录里的文件。如果你打算去修改这个文件，你必须把要修改的文件移出<code>Inbox</code>目录后才能修改。当你不需要这些文件的时候删除它们是被鼓励的。</p>
+
+<p>更多关于在你APP能支持的文档类型看一看<code>Document-Based App Programming Guide for iOS</code>文档。</p>
+
+<h2>使用URL方案去与另外的APP通信(Using URL Schemes to Communicate with Apps)</h2>
+
+<p>一个<code>URL</code>方案让你通过一个你定义的协议去与另外的APP通信。去与一个实现了这样的方案的APP通信，你必须创建一个适当的<code>URL</code>格式告诉系统去打开它。去实现一个自定义方案的支持，你必须声明支持这个方案和处理进来的使用了这个方案的URL。</p>
+
+<p><code>Note:Apple提供内建支持http,mailto.tel和sms URL方案等等。它同样支持基于http URLs针对Maps,YouTube,和iPod APP.对于这些方案的处理是固定的不能被改变的。如果你的URL类型包含一个和Apple定义的方案相同，那么会启动Apple提供的APP而不是你的APP。关于更多信息方案支持看Apple URL Scheme Reference.</code></p>
+
+<h3>发送URL到另外一个APP</h3>
+
+<p>当你想去发送数据到一个实现了自定义<code>URL</code>方案的APP时，创建一个适当的<code>URL</code>格式然后调用APP对象的<code>openURL:</code>方法。<code>openURL:</code>用注册方案启动APP和传递你的<code>URL</code>给它。在这个点上，控制权会传递到新的APP上。</p>
+
+<p>以下的代码片段演示一个APP如何请求另外一个APP的服务(<code>todolist</code>在这个例子里假设是通过APP注册的一个自定义方案)：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="bp">NSURL</span> <span class="o">*</span><span class="n">myURL</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSURL</span> <span class="nl">URLWithString</span><span class="p">:</span><span class="s">@&quot;todolist://www.acme.com?Quarterly%20Report#200806231300&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">[[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="nl">openURL</span><span class="p">:</span><span class="n">myURL</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果APP定义一个自定义的<code>URL</code>方案，他应该为该方案实现一个处理程序。关于系统支持的<code>URL</code>方案和怎么样去格式化<code>URLs</code>看文档<code>Apple URL Scheme Reference</code>.</p>
+
+<h3>实现自定义的URL方案(Implementing Custom URL Schemes)</h3>
+
+<p>如果你的APP能接收指定格式化的<code>URLs</code>,你应该用系统注册相应的<code>URL</code>方案。APP通常使用自定义的<code>URL</code>方案去暴露服务给另外的APP。例如，<code>Maps APP</code>支持显示指定<code>map</code>位置的<code>URLs</code>.</p>
+
+<h4>注册自定义URL方案(Registering Custom URL Schemes)</h4>
+
+<p>去注册你的<code>APP URL</code>类型，包含<code>CFBundleURLTypes</code>键到你的<code>Info.plist</code>文件。<code>CFBundleURLTypes</code>键包含一个字典数组，这个字典数据的每一项(每一项都是一个字典，里面可以包含如下的一个<code>CFBundleURLName</code>键，这个键的值就是定义一个反转<code>DNS</code>样式的方案摘要名，然后还有一个<code>CFBundleURLSchemes</code>键，这个键是一个字符串数组，可以包含多个方案名，比如可以支持<code>http，tel,sms</code>等等你想去支持的方案名)可以定义一个你的APP支持的<code>URL</code>方案。</p>
+
+<p>如下是每一个字典包含的键值对描述:
+Key | Value
+&mdash; | &mdash;
+CFBundleURLName | 一个字符从包含URL方案的摘要名(abstract name).保证这个是唯一的，推荐你
+指定一个标识符使用反转DNS样式，例如，com.acme.myscheme.
+CFBundleURLSchemes | 一个字符串数组，用于包含URL方案名，例如，http，mailto，tel,和sms.</p>
+
+<p><code>Note:如果有超过一个第三方APP注册去处理这个相同的方案，目前还没有方法去决定把这个方案给那个APP处理.</code></p>
+
+<h4>处理URL请求(Handling URL Requests)</h4>
+
+<p>一个有自定义<code>URL</code>方案的APP必须有能力去处理传递给它的<code>URL</code>。在APP启动时间或者在你的APP运行或者在后台期间，所有的<code>URLs</code>是传递到你的APP的代理。去处理到达的<code>URLs</code>，你的代理应该实现以下的方法：</p>
+
+<ul>
+<li>使用<code>application:willFinishLaunchingWithOptions:</code>和<code>application:didFinishLaunchingWithOptions:</code>方法去找寻关于URL的信息和决定你是否想去打开它。如果两个方法中有一个放回<code>NO</code>，你的APP URL处理代码是不会被调用的。</li>
+<li>使用<code>application:openURL:sourceApplication:annotation:</code>去打开这个文件。</li>
+</ul>
+
+
+<p>当一个URL请求到达时你的APP没有运行，APP会启动和移动到前台，这样它能够打开这个URL。你的<code>application:willFinishLaunchingWithOptions:</code>或者<code>application:didFinishLaunchingWithOptions:</code>的实现应该从他的<code>options</code>字典寻找URL和确定是否APP能够打开它。如果它能，返回<code>YES</code>和让你的<code>application:openURL:sourceApplication:annotation:</code>(或者<code>application:handleOpenURL:</code>)方法操作这个实际的URL打开。(如果你实现了这两个方法，这两个方法必须都返回<code>YES</code>之前的网址才能打开.)图6-1显示一个APP被请求去打开一个URL的启动顺序。
+<img src="http://liuhaoxiu.github.io/images/app_open_url_2x.png" width="612" height="807"></p>
+
+<p>当一个URL请求到达时，如果你的APP是运行在后台或者是暂停(挂起)的，它将迁移回前台去打开这个URL。在这之后不久，系统调用代理<code>application:openURL:sourceApplication:annotation:</code>方法去检查URL和打开它。</p>
+
+<p><code>Note:支持自定义URL方案的APP当启动这个APP去处理一个不同方案的URL时能够指定不同的启动图片去显示</code>
+所有的URLs都通过一个<code>NSURL</code>对象传递到你的APP。它是由你去定义的URL格式，但是<code>NSURL</code>类遵循<code>RFC 1808</code>规范因此支持大部分的URL格式协议。这个类包含的方法返回有<code>RFC 1808</code>定义的URL的不同部分，包括用户，密码，查询，片段，和参数字符串。你的自定义方案的协议(<code>protocol</code>)能使用这些URL部分传送不同种类的信息。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="bp">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">openURL:</span><span class="p">(</span><span class="bp">NSURL</span> <span class="o">*</span><span class="p">)</span><span class="nv">url</span>
+</span><span class='line'>        <span class="nf">sourceApplication:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">sourceApplication</span> <span class="nf">annotation:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">annotation</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">([[</span><span class="n">url</span> <span class="n">scheme</span><span class="p">]</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;todolist&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">ToDoItem</span> <span class="o">*</span><span class="n">item</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ToDoItem</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>        <span class="bp">NSString</span> <span class="o">*</span><span class="n">taskName</span> <span class="o">=</span> <span class="p">[</span><span class="n">url</span> <span class="n">query</span><span class="p">];</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">taskName</span> <span class="o">||</span> <span class="o">!</span><span class="p">[</span><span class="nb">self</span> <span class="nl">isValidTaskString</span><span class="p">:</span><span class="n">taskName</span><span class="p">])</span> <span class="p">{</span> <span class="c1">// must have a task name</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="n">taskName</span> <span class="o">=</span> <span class="p">[</span><span class="n">taskName</span> <span class="nl">stringByReplacingPercentEscapesUsingEncoding</span><span class="p">:</span><span class="n">NSUTF8StringEncoding</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">item</span><span class="p">.</span><span class="n">toDoTask</span> <span class="o">=</span> <span class="n">taskName</span><span class="p">;</span>
+</span><span class='line'>        <span class="bp">NSString</span> <span class="o">*</span><span class="n">dateString</span> <span class="o">=</span> <span class="p">[</span><span class="n">url</span> <span class="n">fragment</span><span class="p">];</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dateString</span> <span class="o">||</span> <span class="p">[</span><span class="n">dateString</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;today&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">item</span><span class="p">.</span><span class="n">dateDue</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSDate</span> <span class="n">date</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[</span><span class="nb">self</span> <span class="nl">isValidDateString</span><span class="p">:</span><span class="n">dateString</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="c1">// format: yyyymmddhhmm (24-hour clock)</span>
+</span><span class='line'>            <span class="bp">NSString</span> <span class="o">*</span><span class="n">curStr</span> <span class="o">=</span> <span class="p">[</span><span class="n">dateString</span> <span class="nl">substringWithRange</span><span class="p">:</span><span class="n">NSMakeRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)];</span>
+</span><span class='line'>            <span class="bp">NSInteger</span> <span class="n">yeardigit</span> <span class="o">=</span> <span class="p">[</span><span class="n">curStr</span> <span class="n">integerValue</span><span class="p">];</span>
+</span><span class='line'>            <span class="n">curStr</span> <span class="o">=</span> <span class="p">[</span><span class="n">dateString</span> <span class="nl">substringWithRange</span><span class="p">:</span><span class="n">NSMakeRange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)];</span>
+</span><span class='line'>            <span class="bp">NSInteger</span> <span class="n">monthdigit</span> <span class="o">=</span> <span class="p">[</span><span class="n">curStr</span> <span class="n">integerValue</span><span class="p">];</span>
+</span><span class='line'>            <span class="n">curStr</span> <span class="o">=</span> <span class="p">[</span><span class="n">dateString</span> <span class="nl">substringWithRange</span><span class="p">:</span><span class="n">NSMakeRange</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">)];</span>
+</span><span class='line'>            <span class="bp">NSInteger</span> <span class="n">daydigit</span> <span class="o">=</span> <span class="p">[</span><span class="n">curStr</span> <span class="n">integerValue</span><span class="p">];</span>
+</span><span class='line'>            <span class="n">curStr</span> <span class="o">=</span> <span class="p">[</span><span class="n">dateString</span> <span class="nl">substringWithRange</span><span class="p">:</span><span class="n">NSMakeRange</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">)];</span>
+</span><span class='line'>            <span class="bp">NSInteger</span> <span class="n">hourdigit</span> <span class="o">=</span> <span class="p">[</span><span class="n">curStr</span> <span class="n">integerValue</span><span class="p">];</span>
+</span><span class='line'>            <span class="n">curStr</span> <span class="o">=</span> <span class="p">[</span><span class="n">dateString</span> <span class="nl">substringWithRange</span><span class="p">:</span><span class="n">NSMakeRange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)];</span>
+</span><span class='line'>            <span class="bp">NSInteger</span> <span class="n">minutedigit</span> <span class="o">=</span> <span class="p">[</span><span class="n">curStr</span> <span class="n">integerValue</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="bp">NSDateComponents</span> <span class="o">*</span><span class="n">dateComps</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSDateComponents</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">dateComps</span> <span class="nl">setYear</span><span class="p">:</span><span class="n">yeardigit</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">dateComps</span> <span class="nl">setMonth</span><span class="p">:</span><span class="n">monthdigit</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">dateComps</span> <span class="nl">setDay</span><span class="p">:</span><span class="n">daydigit</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">dateComps</span> <span class="nl">setHour</span><span class="p">:</span><span class="n">hourdigit</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">dateComps</span> <span class="nl">setMinute</span><span class="p">:</span><span class="n">minutedigit</span><span class="p">];</span>
+</span><span class='line'>            <span class="bp">NSCalendar</span> <span class="o">*</span><span class="n">calendar</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="bp">NSCalendar</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithCalendarIdentifier</span><span class="p">:</span><span class="n">NSGregorianCalendar</span><span class="p">];</span>
+</span><span class='line'>            <span class="bp">NSDate</span> <span class="o">*</span><span class="n">itemDate</span> <span class="o">=</span> <span class="p">[</span><span class="n">calendar</span> <span class="nl">dateFromComponents</span><span class="p">:</span><span class="n">dateComps</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">itemDate</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="n">item</span><span class="p">.</span><span class="n">dateDue</span> <span class="o">=</span> <span class="n">itemDate</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">[(</span><span class="bp">NSMutableArray</span> <span class="o">*</span><span class="p">)</span><span class="nb">self</span><span class="p">.</span><span class="n">list</span> <span class="nl">addObject</span><span class="p">:</span><span class="n">item</span><span class="p">];</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>打开一个URL时显示一个自定义的启动图片(Displaying a Custom Launch Image When a URL is Opened)</h3>
+
+<p>支持自定义URL方案的APP能够为每一个支持的方案提供一个自定义的启动图片。当系统启动你的APP去处理一个URL时没有相关的快照可以用，它显示你指定的启动图片。去指定一个启动图片，提供一个PNG图片，名字使用以下的命名约定：
+<code>&lt;basename&gt;-&lt;url_scheme&gt;&lt;other_modifiers&gt;.png</code>
+在命名约定中，<code>basename</code>表示通过在你的<code>Info.plist</code>文件里的<code>UILaunchImageFile</code>键指定的基础图片名。如果你没有指定一个自定义的基础名，使用<code>Default</code>字符串。这个名字的<code>&lt;url_scheme&gt;</code>部分是你的URL方案名。为<code>myapp</code>URL方案指定一个通用的启动图片，你将在你的APP的<code>bundle</code>里包含一个名字为<code>Default-myapp@2x.png</code>的图片文件。(@2x修饰的意思是这个图片打算视网膜显示，如果你的APP同样支持分辨率显示，你将同样提供一个<code>Default-myapp.png</code>图片。)</p>
+
+<h1>性能技巧(Performance Tips)</h1>
+
+<p>在你APP开发的每一个步骤，考虑你的设计的选择对你的APP整体性能的影响。电源使用和内存消耗对于iOS APP是极其重大考虑，也还有其他许多另外的考虑。以下的部分描述了在你的开发过程中你应该考虑的方方面面的因素。</p>
+
+<h2>减少你APP的电池消耗(Reduce Your App’s Power Consumption)</h2>
+
+<p>耗电量在移动设备是一个一直存在的问题。电池管理系统通过关闭任何现在没在使用的硬件特性去保存电量。你能够通过优化使用以下的特性去帮助改善电池寿命:</p>
+
+<ul>
+<li>The CPU</li>
+<li>Wi-Fi, Bluetooth, and baseband (EDGE, 3G) radios</li>
+<li>The Core Location framework</li>
+<li>The accelerometers</li>
+<li>The disk</li>
+</ul>
+
+
+<p>你的优化的目标应该是以最有效的方式去做大部分的工作。你应该总是使用工具(<code>Instruments</code>)优化你的运算法则。但是即使是最优的运算法则可能仍然对设备上的电池寿命有一个负面影响。因此在你写你的代码的时候你应该考虑以下的指导：</p>
+
+<ul>
+<li>避免做需要轮询的工作。轮询会阻止CPU去休眠。不用轮询可以使用<code>NSRunLoop</code>或者<code>NSTimer</code>去做你需要定期的工作。</li>
+<li>在任何可能的时候保持<code>UIApplication</code>对象的<code>idleTimerDisabled</code>属性值为<code>NO</code>。在一个指定的不活动时间后这个空闲定时关闭设备屏幕。如果你不需要屏幕常亮，让系统关闭它。如果关闭屏幕对你的APP体验有影响，你应该修改你的代码去消除这个负面影响而不是禁用这个空闲定时时间。</li>
+<li>尽可能合并工作去最大化提高空闲时间。它通常去同时执行一套计算比它在一个较长的时间去一小块一小块的执行会使用更少的电量。定期做小块的工作需要更经常的唤醒CPU使之在一个能够执行你任务的状态。</li>
+<li>避免太频繁地访问磁盘。例如，如果你的APP保存状态信息到磁盘，只有当状态信息改变时才去访问磁盘，并尽可能合并改变避免频繁的去写小的改变。</li>
+<li>不要在屏幕上画的比需要的速度快。画(<code>Drawing</code>)是一个昂贵的操作。不要依靠硬件来调节你的帧数率。只画你的APP实际需要的帧数。</li>
+<li>如果使用<code>UIAccelerometer</code>类去接收定期的加速计事件，当你不需要这些事件的时候禁用这些事件的交付。同样的，将事件交付的频率设置为你需要的适当的最小值。</li>
+</ul>
+
+
+<p>你传送到网络更多的数据，然而更多的电量必须用来运行电话。事实上，访问网络是你能执行的最耗电的操作。你能够使用以下的指导去最小化访问网络的时间:</p>
+
+<ul>
+<li>只有有需要时才连接外部的网络，不要去轮询这些服务。</li>
+<li>当你必须连接到网络，传输你需要做这个工作的最小的数据块(不传输不必要的数据)。使用压缩数据格式，不要包含可以被忽略的额外的内容。</li>
+<li>当使用<code>NSURLSession</code>类去排队多个上传或者下载任务时，同时排队这些项而不是等待一个结束再去开启下一个。当系统有最有效的方法做这个时系统自动管理队列执行任务。</li>
+<li>尽可能使用Wi-Fi连接到网络.Wi-Fi使用比蜂窝无线电(<code>cellular radios</code>)更少的电量。</li>
+<li>如果你使用<code>Core Location framework</code>去收集位置数据，一旦可能立马禁用位置更新，设置距离过滤和精确等级到恰当的值。<code>Core Location</code>使用可用的<code>GPS</code>，<code>cell</code>(蜂窝无线电)，和<code>Wi-Fi</code>网络去确定用户的位置。虽然<code>Core Location</code>工作很难减少这些无线电的使用，但是设置精确和过滤给<code>Core Location</code>的选项去完全关闭硬件，在这种情况下，它是不需要的。</li>
+</ul>
+
+
+<h2>有效使用内存(Use Memory Efficiently)</h2>
+
+<p>鼓励APP使用尽可能少的内存，这样系统能够保持更多的APP在内存中或者奉献更多的内存给真正需要内存的前台APP。系统有多少可用的空闲内存和你的APP的相对性能是直接相关的。较少的空闲内存意味着系统更有可能不能满足将来的内存请求。</p>
+
+<p>去确保总有足够的可能内存，你应该最小化你的APP的内存使用和当系统请求释放内存时灵敏的响应。</p>
+
+<h3>观察低内存警告(Observe Low-Memory Warnings)</h3>
+
+<p>当系统派遣一个低内存警告到你的APP时，马上响应。低内存警告是你去移除对你不需要的对象的引用的时机。响应这些警告是重要的，因为APP不去做这个的话你的APP更有可能被系统终止。系统交付内存警告给你的APP使用以下的APIs:</p>
+
+<ul>
+<li>APP代理的<code>applicationDidReceiveMemoryWarning:</code>方法.</li>
+<li>你的<code>UIViewController</code>类的<code>didReceiveMemoryWarning</code>方法.</li>
+<li><code>UIApplicationDidReceiveMemoryWarningNotificationnotification</code>.</li>
+<li>调度源类型<code>DISPATCH_SOURCE_TYPE_MEMORYPRESSURE</code>.这个方式只能用来区分系统内存压力的严重程度.</li>
+</ul>
+
+
+<p>根据接收的任何这些警告，你的处理方法应该直接释放任何不需要的内存作为响应。使用警告去清理缓存和释放图片。如果你有一个大的数据结构没有被使用，写这些结构到磁盘然后释放掉在内存中已被写入磁盘的数据。</p>
+
+<p>如果你的数据模型包含了已知的可清除的资源，你可以有一个相应的管理对象注册关于<code>UIApplicationDidReceiveMemoryWarningNotification</code>的通知然后直接移除对它的可清理资源的强引用。处理这个通知直接避免需要去通过APP代理路由的所有的内存警告调用。</p>
+
+<p><code>Note:你可以测试你的APP的行为在低内存条件下，你可以在iOS模拟器里使用模拟内存警告命令.</code></p>
+
+<h3>减少你的APP内存占用(Reduce Your App’s Memory Footprint)</h3>
+
+<p>APP开始时占用低的内存便于有更多空间在之后展开你的APP。以下有一些关于如何整体减少你的APP内存占用的技巧.</p>
+
+<table>
+<thead>
+<tr>
+<th>Tip                       </th>
+<th>     Actions to take</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>消除内存泄漏                </td>
+<td> 因为在iOS中内存是关键的资源,APP绝没有内存溢出.</td>
+</tr>
+<tr>
+<td>制做尽可能小的资源文件        </td>
+<td> 文件在磁盘上只有加载进入内存它们才能被使用.压缩所有的图片文件去使它们尽可能的小.(去压缩PNG图片-这个是iOSAPP首选的压缩格式-使用<code>pngcrush</code>工具.)你可以制作一个较小的<code>property list</code>文件(其实就是写一个对象到内存,这个对象的属性列表必须是框架支持的某些原生的数据类型，比如array，dictionary等等类型)通过使用<code>NSPropertyListSerialization</code>类写它们到一个二进制的格式.</td>
+</tr>
+<tr>
+<td>使用<code>Core Data</code>或者<code>SQLite</code>存储大块数据 </td>
+<td> 如果你的APP操作大块的结构数据，存储它到一个<code>Core Data</code>持久存储或者一个<code>SQLite</code>数据库而不是在一个平面的文件.<code>Core Data</code>和<code>SQLite</code>都提供了高效的方法去管理大数据集，它们不需要全部的数据集一次都加载入内存里去操作。</td>
+</tr>
+<tr>
+<td>延迟加载资源                 </td>
+<td> 你加载资源文件应该直到它实际需要时才加载。预加载资源可能看上去像很节省时间的方法，但是这种做法实际上是你的APP马上慢了下来。另外，如果最后都没有使用这些资源，加载它浪费内存不是一个好的意图。</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>明智的分配内存(Allocate Memory Wisely)</h3>
+
+<p>以下列出了在你的APP里改善内存使用的技巧.</p>
+
+<table>
+<thead>
+<tr>
+<th>Tip                       </th>
+<th>     Actions to take</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在资源文件上施加大小限制      </td>
+<td> 当有一个较小的资源文件行得通时避免加载一个大的资源文件。不去使用高分辨率的图片，对于基于iOS的设备使用合适的大小。如果你必须使用一个大的资源文件，查找在任何给定时间内只加载您需要的文件的部分的方法。例如，不加载全部的文件进入内存，使用<code>mmap</code>和<code>munmap</code>功能去映射文件的一部分进入和离开内存。关于更多的映射文件进入内存，看<code>File-System Performance Guidelines</code>.</td>
+</tr>
+<tr>
+<td>避免无界限问题集合            </td>
+<td> 无界限的问题集合可能必须有一个任意大的数据量的计算。如果集合必须的内存比它能使用的更多，你的APP可能不能去完成计算。你的APP应该尽可能避免如此集合和运行在已知的内存限制问题上(work on problems with known memory limits)。</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>调整你的网络代码(Tune Your Networking Code)</h2>
+
+<p>在iOS的网络栈里包含了几个在iOS设备的无线电硬件上通信的接口.这个主要的设计接口是CFNetwork框架，它建立在<code>BSD sockets</code>上面和在<code>Core Foundation</code>框架里去和实体网络通信的不透明类型。你同样能使用在<code>Foundation</code>框架中<code>NSStream</code>类和在系统<code>Core OS</code>层里找到低层级的<code>BSD sockets</code>.</p>
+
+<h3>高效网络技巧(Tips for Efficient Networking)</h3>
+
+<p>实现代码通过网络去接收或者传输数据在一个设备上是一个最耗电的操作。最小化传输或者接收数据花费的时间有助于改善电池寿命.因此，当写你的网络相关的代码时你应该考虑以下的技巧:</p>
+
+<ul>
+<li>关于你控制的协议，定义你的数据格式尽可能被紧凑.</li>
+<li>避免使用非正式(<code>chatty</code>)协议.</li>
+<li>传输数据包在有可能时使用突发网络(<code>bursts</code>(意义是为了博取用户体验，上传下载时突发流量，用所能得到的最大带宽去做传输数据的事)).</li>
+</ul>
+
+
+<h3>使用Wi-Fi(Using Wi-Fi)</h3>
+
+<p>如果你的APP使用Wi-Fi请求网络，你必须通过包含<code>UIRequiresPersistentWiFi</code>键在你的APP的<code>Info.plist</code>文件去通知系统这个事实。包含这个键让系统知道如果它发现有活动的Wi-Fi热点可用它应该显示网络对话框块.它同样让系统知道在你的APP运行期间它不应该试图去关闭Wi-Fi硬件.</p>
+
+<p>防止Wi-Fi硬件使用太多电量，iOS有一个内建的计时计，如果运行的APP没有使用<code>UIRequiresPersistentWiFi</code>键那么30分钟后会完全关闭Wi-Fi硬件.如果用户启动一个APP包含了这个键，iOS有效的禁用这个计时计在这个APP的生命运行周期期间。一旦APP退出或者被挂起，系统重新启用这个计时计。</p>
+
+<p><code>Note:注意，当设备空闲时(也就是说，屏幕锁定)即使UIRequiresPersistentWiFi的值是true，它也不会生效。这个APP被认为是不活动的，尽管可能它在某些层面上发挥作用，但是它是没有Wi-Fi连接的.</code></p>
+
+<h3>飞行模式警告(The Airplane Mode Alert)</h3>
+
+<p>设备在飞行模式期间如果你的APP启动，系统可能显示一个警告去通知用户一些实际情况。系统显示警告只有当以下所有条件满足时：</p>
+
+<ul>
+<li>你的APP<code>Info.plist</code>文件包含了<code>UIRequiresPersistentWiFi</code>键并且值是<code>true</code>.</li>
+<li>设备在飞行模式期间你的APP启动.</li>
+<li>切换到飞行模式后Wi-Fi在设备上没有重新手动启用.</li>
+</ul>
+
+
+<h2>使应用程序的备份更有效(Make App Backups More Efficient)</h2>
+
+<p>无线备份发生通过iCound或者当用户设备与iTunes同步时。在备份期间，文件从设备传输到用户计算机或者iCloud账户。文件在你APP沙盒中的位置确定这是文件是否备份和恢复.如果你的APP创建许多经常改变的大文件并把它们放在一个备份的位置，备份结果可能很慢。作为你写你的文件管理代码，你需要去注意这个事.</p>
+
+<h3>APP备份最佳实践(App Backup Best Practices)</h3>
+
+<p>对于备份和恢复你不需要以任何方式去准备你的APP。设备与一个活动的iCloud账户在适当的时候备份它们的APP数据到iCloud.设备插入计算机，iTunes执行APP数据文件的增量备份。无论如何，iCloud和iTunes不备份以下目录的内容:</p>
+
+<ul>
+<li><code>&lt;Application_Home&gt;/AppName.app</code></li>
+<li><code>&lt;Application_Data&gt;/Library/Caches</code></li>
+<li><code>&lt;Application_Data&gt;/tmp</code></li>
+</ul>
+
+
+<p>为了防止同步处理消耗太长时间，去选择放置文件在你的APP的<code>home</code>目录的位置。APP存储大文件到iTunes或者iCloud这个过程可能很慢.这些APP同样可能消耗了一大块用户可用的存储空间，这个可能促使用户去删除这个APP或者禁用这个APP到iCloud的数据备份.因此，你应该根据以下相应的指导存储数据：</p>
+
+<ul>
+<li>关键数据应该存储在<code>&lt;Application_Data&gt;/Documents</code>目录。关键数据是任何不能够被你的APP重建的数据，例如用户文档和另外用户生成的类容。</li>
+<li>支持文件(Support files)包含你的APP下载或者生成和你的APP能够根据需要重建的文件。存储你APP支持文件的位置依赖于iOS的当前版本.
+
+<ol>
+<li>在iOS 5.1或之后版本，存储支持文件在<code>&lt;Application_Data&gt;/Library/Application</code>的<code>Support</code>目录里和使用<code>setResourceValue:forKey:error:</code>方法添加<code>NSURLIsExcludedFromBackupKey</code>属性到相应的<code>NSURL</code>对象。(如果你是使用Core Foundation，使用<code>CFURLSetResourcePropertyForKey</code>函数添加<code>kCFURLIsExcludedFromBackupKey</code>键到你的<code>CFURLRef</code>对象)应用这个属性阻止文件被备份到iTunes或者iCloud。如果你有大量的支持文件，你可能存储它们在一个自定义的子目录和应用这个扩展属性到这个恰当的目录。</li>
+<li>在iOS 5.0或之前，存储支持文件在<code>&lt;Application_Data&gt;/Library/Caches</code>目录里去阻止它们备份。</li>
+</ol>
+</li>
+<li>缓存数据应该存储在<code>&lt;Application_Data&gt;/Library/Caches</code>目录里。示例文件你应该放在<code>Caches</code>目录包括(但不限于)数据库缓存文件和可下载的内容，例如由杂志，报纸，和地图这些APP使用的文件。你APP应该能够优雅的处理通过系统删除缓存数据去释放磁盘空间这种情况.</li>
+<li>临时数据应该被存储在<code>&lt;Application_Data&gt;/tmp</code>目录里。临时数据由任何你不需要在以后用到的数据组成。当你使用完它们时推荐删除这些文件，如此它们不需要继续占用用户设备的空间。</li>
+</ul>
+
+
+<p>尽管iTunes备份APP <code>bundle</code>本身，但在每一个同步操作期间它不这样做。当下一个设备与iTunes同步时已购的APP直接来自一个已备份的设备(你的手机第一个插入电脑与iTunes连接时会备份你设备上的已购项目和及其需要备份的数据)。在之后的同步操作期间APP是不备份的，除非APP <code>bundle</code>本身已被改变(例如，因为APP是已被更新)。</p>
+
+<h3>在APP更新期间保存的文件(Files Saved During App Updates)</h3>
+
+<p>当用户下载一个APP更新，iTunes安装这个更新在一个新的APP目录。在删除旧的安装之前它移动数据文件从旧的安装到新的APP目录。在更新过程期间文件在以下的目录是保证会被保留的：</p>
+
+<ul>
+<li><code>&lt;Application_Data&gt;/Documents</code></li>
+<li><code>&lt;Application_Data&gt;/Library</code></li>
+</ul>
+
+
+<p>尽管文件在另外目录同样有可能被移动，不过更新之后你不应该依靠他们(就是不应该依赖这些或许会存在的文件)。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[UIView动画块占用主线程不]]></title>
