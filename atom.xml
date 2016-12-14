@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-12-14T16:36:13+08:00</updated>
+  <updated>2016-12-14T16:39:09+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -18,9 +18,7 @@
     <link href="http://liuhaoxiu.github.io/blog/2016/12/14/event-handling-guidezhi-remote-control-events/"/>
     <updated>2016-12-14T16:31:37+08:00</updated>
     <id>http://liuhaoxiu.github.io/blog/2016/12/14/event-handling-guidezhi-remote-control-events</id>
-    <content type="html"><![CDATA[<h1>Event Handling Guide之Remote Control Events</h1>
-
-<p>远程控制事件是用户去控制你的APP多媒体的一种方法。远程控制事件源于外部附件或者来自通过系统显示的传输控制并通过<code>Media Player framework</code>的类交付到你的APP。APP播放音视频内容使用这些事件去开始和停止播放，改变轨迹，甚至快进一个项(rate an item)。所有的媒体APP都应该支持这些事件。</p>
+    <content type="html"><![CDATA[<p>远程控制事件是用户去控制你的APP多媒体的一种方法。远程控制事件源于外部附件或者来自通过系统显示的传输控制并通过<code>Media Player framework</code>的类交付到你的APP。APP播放音视频内容使用这些事件去开始和停止播放，改变轨迹，甚至快进一个项(rate an item)。所有的媒体APP都应该支持这些事件。</p>
 
 <p>除了支持远程控制事件，APP可以使用<code>Media Player framework</code>去提供播放的轨迹信息。系统在适当的位置显示播放信息，例如锁屏界面和控制中心。</p>
 
