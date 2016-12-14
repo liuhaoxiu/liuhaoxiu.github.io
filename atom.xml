@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-08-12T11:23:28+08:00</updated>
+  <updated>2016-12-14T16:36:13+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -12,6 +12,109 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Event Handling Guide之Remote Control Events]]></title>
+    <link href="http://liuhaoxiu.github.io/blog/2016/12/14/event-handling-guidezhi-remote-control-events/"/>
+    <updated>2016-12-14T16:31:37+08:00</updated>
+    <id>http://liuhaoxiu.github.io/blog/2016/12/14/event-handling-guidezhi-remote-control-events</id>
+    <content type="html"><![CDATA[<h1>Event Handling Guide之Remote Control Events</h1>
+
+<p>远程控制事件是用户去控制你的APP多媒体的一种方法。远程控制事件源于外部附件或者来自通过系统显示的传输控制并通过<code>Media Player framework</code>的类交付到你的APP。APP播放音视频内容使用这些事件去开始和停止播放，改变轨迹，甚至快进一个项(rate an item)。所有的媒体APP都应该支持这些事件。</p>
+
+<p>除了支持远程控制事件，APP可以使用<code>Media Player framework</code>去提供播放的轨迹信息。系统在适当的位置显示播放信息，例如锁屏界面和控制中心。</p>
+
+<p>更多关于<code>Media Player framework</code>的类的信息，看<code>Media Player Framework Reference</code>。</p>
+
+<h2>准备你的APP的远程控制事件</h2>
+
+<p>去接收远程控制事件，做以下几点：</p>
+
+<ul>
+<li>注册你支持的每一个action的处理者。使用共享的<code>MPRemoteCommandCenter</code>对象去注册不同事件类型的处理者，详细描述在<code>Handling Remote Control Events</code>里面。</li>
+<li>开始播放音频(audio)。你的APP必须是"现在播放"(&ldquo;Now playing&rdquo;)的APP。APP直到它开始播放音频才接收远程控制事件。</li>
+</ul>
+
+
+<p>如果你的APP还提供了包含当前轨迹信息的正在播放的信息，使用<code>MPNowPlayingInfoCenter</code>对象在适当的时间去更新这个信息。更多关于如何去提供现在播放信息，看<code>Providing Now Playing Information</code>。</p>
+
+<h2>处理远程控制事件(Handling Remote Control Events)</h2>
+
+<p>处理一个特定的远程控制事件，与适当的<code>MPRemoteCommand</code>对象注册一个action操作者。<code>Media Player framework</code>定义一个标准<code>MPRemoteCommand</code>对象集合对于处理媒体相关的事件。当一个附件或者iOS接口生成一个远程控制事件时，系统通知相应的<code>MPRemoteCommand</code>对象。这个对象通过执行任何附加的处理程序响应。</p>
+
+<p>你从共享的<code>MPRemoteCommandCenter</code>对象检索远程命令对象。远程命令中心属性包含管理播放对象，切换轨道，和为轨道评级(rating the track)。获取你想去支持的对象，使用一个block或者一个action方法附加一个处理程序。通常，你为每一个命令类型注册一个单个处理程序，如果你需要你也可以注册多个处理程序。以下代码显示当用户想播放一个轨道时如何去注册一个block被执行。在这个例子里，block使用一个自定义的播放对象播放当前选中的音轨。在你的代码里面，执行你需要去播放这个音轨的任何动作。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">MPRemoteCommandCenter</span> <span class="o">*</span><span class="n">commandCenter</span> <span class="o">=</span> <span class="p">[</span><span class="n">MPRemoteCommandCenter</span> <span class="n">sharedCommandCenter</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">commandCenter</span><span class="p">.</span><span class="n">playCommand</span> <span class="nl">addTargetUsingBlock</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">MPRemoteCommandEvent</span> <span class="o">*</span><span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Begin playing the current track.</span>
+</span><span class='line'>    <span class="p">[[</span><span class="n">MyPlayer</span> <span class="n">sharedPlayer</span><span class="p">]</span> <span class="n">play</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果你明确不想去支持一个给定的命令，获取这个命令对象并设置它的<code>enabled</code>属性到<code>NO</code>。当你的APP是现在演示的APP时禁用一个远程命令让系统知道它不应该显示任何相关的UI。</p>
+
+<p>一些命令对象让你指定与该命令有关的其它的信息。例如，反馈命令让你指定一个描绘反馈意义的本地字符串。一定要查看参考文档，了解您所支持的特定命令的信息。</p>
+
+<p>对于远程控制命令处理程序的添加和移除的更多信息，看<code>MPRemoteCommand Class Reference</code>。</p>
+
+<h2>提供正在播放的信息(Providing Now Playing Information)</h2>
+
+<p>当播放audio或者video内容时，使用<code>MPNowPlayingInfoCenter</code>对象去提供关于这个内容正在播放的描述信息。<code>MPNowPlayingInfoCenter</code>对象包含一个<code>nowPlayingInfo</code>字典，它的内容描述了正在播放的项目。系统在适当的地方显示字典的信息，例如设备的锁定屏幕。</p>
+
+<p>以下代码显示一个关于如何使用在<code>MPMediaItem</code>里面的信息去配置正在播放的信息的例子。这个例子枚举一组固定的属性，使用结果值去构建一个新的字典这个是接下来分配给<code>MPNowPlayingInfoCenter</code>对象的。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">configureNowPlayingInfo:</span><span class="p">(</span><span class="bp">MPMediaItem</span><span class="o">*</span><span class="p">)</span><span class="nv">item</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="bp">MPNowPlayingInfoCenter</span><span class="o">*</span> <span class="n">info</span> <span class="o">=</span> <span class="p">[</span><span class="bp">MPNowPlayingInfoCenter</span> <span class="n">defaultCenter</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSMutableDictionary</span><span class="o">*</span> <span class="n">newInfo</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableDictionary</span> <span class="n">dictionary</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSSet</span><span class="o">*</span> <span class="n">itemProperties</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSSet</span> <span class="nl">setWithObjects</span><span class="p">:</span><span class="n">MPMediaItemPropertyTitle</span><span class="p">,</span>
+</span><span class='line'>          <span class="n">MPMediaItemPropertyArtist</span><span class="p">,</span>
+</span><span class='line'>          <span class="n">MPMediaItemPropertyPlaybackDuration</span><span class="p">,</span>
+</span><span class='line'>          <span class="n">MPNowPlayingInfoPropertyElapsedPlaybackTime</span><span class="p">,</span>
+</span><span class='line'>          <span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">[</span><span class="n">item</span> <span class="nl">enumerateValuesForProperties</span><span class="p">:</span><span class="n">itemProperties</span>
+</span><span class='line'>          <span class="nl">usingBlock</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">property</span><span class="p">,</span> <span class="kt">id</span> <span class="n">value</span><span class="p">,</span> <span class="kt">BOOL</span> <span class="o">*</span><span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">newInfo</span> <span class="nl">setObject</span><span class="p">:</span><span class="n">value</span> <span class="nl">forKey</span><span class="p">:</span><span class="n">property</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">info</span><span class="p">.</span><span class="n">nowPlayingInfo</span> <span class="o">=</span> <span class="n">newInfo</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>NOTE:在iOS模拟器里面，在你的nowPlayingInfo字典里总是包含了MPNowPlayingInfoPropertyPlaybackRate键。模拟器使用这个键值去更新显示在控制中心和另外的基于模拟器界面里面的播放进度。对于暂停或者停止的音轨设置这个键值为0。对于一个正在播放的音轨设置这个值为一个正数。</code></p>
+
+<p>更多关于你可以提供的信息类型，看<code>MPNowPlayingInfoCenter Class Reference</code>。</p>
+
+<h2>在设备测试远程控制事件</h2>
+
+<p>测试你的APP接收和处理与控制中心的远程控制事件是正确的，你通过上滑你屏幕的边缘请求。这些控制发送远程控制事件到当前或者是最近播放音频的APP。你也可以在设备的锁定屏幕请求播放控制。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[APP间通信与APP性能技巧]]></title>
