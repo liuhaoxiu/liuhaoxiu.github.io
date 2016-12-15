@@ -125,7 +125,7 @@
 
 <h2>git receive hooks</h2>
 
-<p><code>commit</code>可能还不能满足要求，我们为了统一代码规范，需要在<code>git</code>服务端检查，规范不符合我们团队的我们就拒绝<code>push</code>,所以需要在<code>receive</code>的时候也触发调用。<a href="">这里</a>这里有我自己参考资料改的一个<code>pre-receive</code>文件可以达到上述要求，你下载完成后把<code>pre-receive</code>、<code>canonicalize_filename.sh</code>一并<code>copy</code>到服务端你的项目仓库的hooks目录下面,至此就会生效了。</p>
+<p><code>commit</code>可能还不能满足要求，我们为了统一代码规范，需要在<code>git</code>服务端检查，规范不符合我们团队的我们就拒绝<code>push</code>,所以需要在<code>receive</code>的时候也触发调用。<a href="https://github.com/liuhaoxiu/pre-receive-uncrustify-hooks">这里</a>这里有我自己参考资料改的一个<code>pre-receive</code>文件可以达到上述要求，你下载完成后把<code>pre-receive</code>、<code>canonicalize_filename.sh</code>一并<code>copy</code>到服务端你的项目仓库的hooks目录下面,至此就会生效了。</p>
 </div>
 
 
