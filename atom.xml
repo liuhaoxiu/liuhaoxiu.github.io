@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2016-12-15T10:32:11+08:00</updated>
+  <updated>2017-01-19T10:01:32+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -12,6 +12,157 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用AFNetworking 3.x做https安全连接]]></title>
+    <link href="http://liuhaoxiu.github.io/blog/2017/01/19/shi-yong-afnetworking-3-dot-xzuo-httpsan-quan-lian-jie/"/>
+    <updated>2017-01-19T10:00:20+08:00</updated>
+    <id>http://liuhaoxiu.github.io/blog/2017/01/19/shi-yong-afnetworking-3-dot-xzuo-httpsan-quan-lian-jie</id>
+    <content type="html"><![CDATA[<h1>使用AFNetworking 3.x做https安全连接,单向验证</h1>
+
+<h2>制作自签名证书</h2>
+
+<p>对于一般的需求自签名证书足够了，这里可以自己制作一个CA证书，然后用CA给所有你要用到的证书签名，这样你就可以在所有安装了CA证书的iOS设备里面用此CA签名的证书。自己制作CA证书稍后再说(12306就是用的自己的CA颁发的自签名证书)，先讲制作自签名证书。</p>
+
+<h3>如何使用OpenSSL去创建一个自签名的SSL证书</h3>
+
+<p>运行以下下命令去创建，你会跳过问题提示，CN就是你的服务器地址。
+<code>openssl req -x509 -sha256 -newkey rsa:2048 -keyout certificate.key -out certificate.crt -days 1024 -nodes -subj '/CN=localhost'req</code>
+这个命令会生成两个文件在当前目录，一个私钥文件和一个crt证书文件，你能看到一个.key后缀名的私钥文件，它是没有密码与之关联的，如果你想使用密码，去掉-nodes选项就可以了。</p>
+
+<h3>转换成AFNetworking可识别的cer格式文件</h3>
+
+<p>运行以下命令可以转换格式，然后改成后缀名cer,AFNetworking可识别的。
+<code>openssl x509 -in server.crt -outform der -out "server.der"</code></p>
+
+<h3>生成pfx文件</h3>
+
+<p>转成c#能使用的证书，用c#写web api做后台其实格式和java使用的.p12是一样的只是后缀名不同。(此文件包含了私钥和证书)，我这里设置了密码"123"
+<code>openssl pkcs12 -export -out certificate.pfx -inkey certificate.key -in certificate.crt</code></p>
+
+<h3>制作CA证书</h3>
+
+<p>其实就是制作一个证书作为CA证书，步骤和制作自签名证书一样，名字不同而已。
+<code>openssl req -x509 -sha256 -newkey rsa:2048 -keyout CA.key -out CA.crt -days 1024 -nodes -subj '/CN=localhost'req</code></p>
+
+<h3>使用CA签发证书</h3>
+
+<p>生成csr文件，和一个私有key
+<code>openssl req -newkey rsa:2048 -keyout server.key -out server.csr -nodes -subj '/CN=localhost'</code></p>
+
+<p>用自有的CA证书给csr文件签名
+<code>openssl x509 -req -sha256 -days 365 -in server.csr -CA CA.crt -CAkey CA.key -CAcreateserial -out server.crt</code></p>
+
+<p>转成c#能使用的证书，用c#写web api做后台其实格式和java使用的.p12是一样的只是后缀名不同。(此文件包含了私钥和证书),我这里设置了密码"123"
+<code>openssl pkcs12 -export -out server.pfx -inkey server.key -in server.crt</code></p>
+
+<p>可改成后缀名cer,AFNetworking可识别的。
+<code>openssl x509 -in server.crt -outform der -out "server.der"</code></p>
+
+<p><code>NOTE:CA验证大概原理是，他会给你的证书公钥、机构、等信息用CA私钥加密然后生成签名放在返回给你的已经签名过的证书里。</code></p>
+
+<h2>AFNetworking与服务端的代码配置</h2>
+
+<p>AFHTTPSessionManager配置代码如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">_sessionManager</span> <span class="o">==</span> <span class="nb">nil</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">_sessionManager</span> <span class="o">=</span> <span class="p">[</span><span class="n">AFHTTPSessionManager</span> <span class="n">manager</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">_sessionManager</span><span class="p">.</span><span class="n">requestSerializer</span><span class="p">.</span><span class="n">cachePolicy</span> <span class="o">=</span> <span class="n">NSURLRequestReloadIgnoringLocalCacheData</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">_sessionManager</span><span class="p">.</span><span class="n">responseSerializer</span> <span class="o">=</span> <span class="p">[</span><span class="n">AFHTTPResponseSerializer</span> <span class="n">serializer</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">AFSecurityPolicy</span> <span class="o">*</span><span class="n">securityPolicy</span> <span class="o">=</span> <span class="p">[</span><span class="n">AFSecurityPolicy</span> <span class="nl">policyWithPinningMode</span><span class="p">:</span><span class="n">AFSSLPinningModeCertificate</span> <span class="nl">withPinnedCertificates</span><span class="p">:[</span><span class="n">AFSecurityPolicy</span> <span class="nl">certificatesInBundle</span><span class="p">:[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">]]];</span>
+</span><span class='line'><span class="n">_sessionManager</span><span class="p">.</span><span class="n">securityPolicy</span> <span class="o">=</span> <span class="n">securityPolicy</span><span class="p">;</span>
+</span><span class='line'><span class="n">_sessionManager</span><span class="p">.</span><span class="n">securityPolicy</span><span class="p">.</span><span class="n">allowInvalidCertificates</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span><span class="c1">//不验证证书有效性</span>
+</span><span class='line'><span class="n">_sessionManager</span><span class="p">.</span><span class="n">securityPolicy</span><span class="p">.</span><span class="n">validatesDomainName</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span><span class="c1">//不验证域名</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>把上面准备好的证书，放到APP的bundle里面，和web api项目根目录里面，服务端代码示例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="kt">var</span> <span class="n">config</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ConfigurationBuilder</span><span class="p">()</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">AddCommandLine</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">AddEnvironmentVariables</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="s">&quot;ASPNETCORE_&quot;</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">host</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WebHostBuilder</span><span class="p">()</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">UseConfiguration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">UseKestrel</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">HttpsConnectionFilterOptions</span> <span class="n">httpsoptions</span> <span class="p">=</span> <span class="k">new</span>    <span class="n">HttpsConnectionFilterOptions</span><span class="p">();</span>
+</span><span class='line'>                    <span class="n">httpsoptions</span><span class="p">.</span><span class="n">ServerCertificate</span> <span class="p">=</span> <span class="k">new</span> <span class="n">X509Certificate2</span><span class="p">(</span><span class="s">&quot;certificate.pfx&quot;</span><span class="p">,</span> <span class="s">&quot;123&quot;</span><span class="p">);;</span>
+</span><span class='line'>                    <span class="n">httpsoptions</span><span class="p">.</span><span class="n">ClientCertificateMode</span> <span class="p">=</span> <span class="n">ClientCertificateMode</span><span class="p">.</span><span class="n">AllowCertificate</span><span class="p">;</span>
+</span><span class='line'>                    <span class="n">httpsoptions</span><span class="p">.</span><span class="n">CheckCertificateRevocation</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>                    <span class="n">options</span><span class="p">.</span><span class="n">UseHttps</span><span class="p">(</span><span class="n">httpsoptions</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">})</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">UseUrls</span><span class="p">(</span><span class="s">&quot;http://192.168.1.89:5000&quot;</span><span class="p">,</span> <span class="s">&quot;https://192.168.1.89:5001&quot;</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">UseContentRoot</span><span class="p">(</span><span class="n">Directory</span><span class="p">.</span><span class="n">GetCurrentDirectory</span><span class="p">())</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">UseIISIntegration</span><span class="p">()</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">UseStartup</span><span class="p">&lt;</span><span class="n">Startup</span><span class="p">&gt;()</span>
+</span><span class='line'>                <span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">host</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启动服务，然后客户端访问，发现可以正常访问。</p>
+
+<p>如果需要验证证书的有效性，可以使用CA证书。通过iOS模拟器，直接拖CA证书文件到模拟器界面上然后安装就可以了。客户端代码修改</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">//_sessionManager.securityPolicy.allowInvalidCertificates = YES;//注释掉，模式是不允许无效证书的</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>服务端代码修改</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="n">httpsoptions</span><span class="p">.</span><span class="n">ServerCertificate</span> <span class="p">=</span> <span class="k">new</span> <span class="n">X509Certificate2</span><span class="p">(</span><span class="s">&quot;server.pfx&quot;</span><span class="p">,</span> <span class="s">&quot;123&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后把server.cer证书分别放到客户端和服务端项目里面，启动服务，客户端访问，发现访问成功。</p>
+
+<h2>相关概念</h2>
+
+<p>双向认证的大概步骤：
+1. 客户端请求一个受保护的资源
+2. 服务端发送它的证书到客户端
+3. 如果验证成功，客户端发送它的证书到服务端
+4. 服务端验证客户端证书。
+5. 如果成功，服务端允许该客户端访问它的受保护的资源</p>
+
+<p><code>NOTE:CA验证证书有效性的过程大概是，因为CA会用私钥签名证书，那么该证书的签名是用私钥加密的，当这个证书从服务端发送过来时，CA证书会用公钥去机密签名而得到证书的公钥，解不开就证明不是此CA颁发的证书，此证书验证无效。</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Event Handling Guide之Remote Control Events]]></title>
