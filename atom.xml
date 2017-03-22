@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2017-03-22T09:07:17+08:00</updated>
+  <updated>2017-03-22T09:10:19+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -86,17 +86,15 @@
 
 <p>应用程序必须与系统注册以接收远程通知,如描述在<code>Registering for Remote Notifications</code>里。收到注册请求后，系统转发请求到APNs，它产生一个唯一的设备令牌，对于应用程序，使用设备证书中包含的信息。它接着使用令牌秘钥加密令牌然后返回它到设备，如图3-5所示。系统交付设备令牌到你的APP使用NSDATA对象交付。接收到此令牌，你APP必须传发它到你的提供者，使用二进制或十六进制格式。没有这个令牌你的提供者不能发送通知到设备。</p>
 
-<p>图3-5 管理设备令牌</p>
-
-<p><img src="http://liuhaoxiu.github.io/images/token_generation_2x.png" width="612" height="807"></p>
+<p>图3-5 管理设备令牌           <br/>
+<img src="http://liuhaoxiu.github.io/images/token_generation_2x.png" width="612" height="807"></p>
 
 <p><code>Important:APNs设备令牌长度是可变的。不要硬编码他们的大小。</code></p>
 
 <p>图3-6表明令牌生成和扩散序列，但是除了显示的由APNs返回的令牌路径外，随后会转发给你的自定义提供者。</p>
 
-<p>图3-6 共享设备令牌</p>
-
-<p><img src="http://liuhaoxiu.github.io/images/registration_sequence_2x.png" width="612" height="807"></p>
+<p>图3-6 共享设备令牌   <br/>
+<img src="http://liuhaoxiu.github.io/images/registration_sequence_2x.png" width="612" height="807"></p>
 
 <h4>令牌信任(通知)(Token Trust (Notification))</h4>
 
