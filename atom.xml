@@ -4,7 +4,7 @@
   <title><![CDATA[刘浩的技术博客]]></title>
   <link href="http://liuhaoxiu.github.io/atom.xml" rel="self"/>
   <link href="http://liuhaoxiu.github.io/"/>
-  <updated>2017-01-19T10:01:32+08:00</updated>
+  <updated>2017-03-22T08:58:18+08:00</updated>
   <id>http://liuhaoxiu.github.io/</id>
   <author>
     <name><![CDATA[刘浩]]></name>
@@ -12,6 +12,98 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Apple推送通知服务]]></title>
+    <link href="http://liuhaoxiu.github.io/blog/2017/03/21/appletui-song-tong-zhi-fu-wu/"/>
+    <updated>2017-03-21T17:17:31+08:00</updated>
+    <id>http://liuhaoxiu.github.io/blog/2017/03/21/appletui-song-tong-zhi-fu-wu</id>
+    <content type="html"><![CDATA[<h2>Apple推送通知服务(Apple Push Notification Service)</h2>
+
+<p>Apple推送通知服务(APNs)是远程通知功能的核心。他是一个关于传播信息到iOS(和，间接的，watchOS),tvOS,和OS X设备的强健和高效的服务。每一个设备建立一个可接受和与APNs加密的IP连接并通过这个持久连接接收通知。如果一个APP的通知到达而这个APP没有运行，设备提醒用户该应用程序有数据等待它。</p>
+
+<p>你提供你自己的服务去生成远程通知给用户。这个服务，被称为提供者，收集用户的数据决定何时需要发送通知。对于每一个通知，提供者生成通知的有效载荷并附加这个有效载荷到一个HTTP/2请求，它接着使用一个持久的和使用HTTP/2多路复用协议的安全通道发送到APNs。根据收到的请求，APNs处理你通知的有效载荷交付给用户设备上的APP。</p>
+
+<p>关于你发送到APNs请求格式的信息，和你可以接收到的响应和错误，看<code>APNs Provider API</code>。关于如何去实现你APP支持的通知，看<code>Registering, Scheduling, and Handling User Notifications</code>。</p>
+
+<h3>远程通知路径(The Path of a Remote Notification)</h3>
+
+<p>Apple推送通知服务传输和路由来自你的提供者关于你APP的远程通知到每一个用户设备。图3-1显示每条通知的路径。当你的提供者确定需要一个通知时，你发送通知和一个设备令牌到APNs服务。APNs服务处理通知路由到正确的用户设备。操作系统处理通知交付到客户端APP。</p>
+
+<p>图3-1 推送一个来自提供者的远程通知到一个客户端APP
+<img src="http://liuhaoxiu.github.io/images/remote_notif_simple_2x.png" width="612" height="807"></p>
+
+<p>你提供到服务的设备令牌类似于一个电话号码；它包含启用APNs去定位那个安装了你的客户端APP的设备的信息。APNs也使用它去验证通知的路由。设备令牌通过你的客户端APP提供给你，它自己与远程通知服务注册后接收令牌。</p>
+
+<p>通知有效载荷是一个包含你想去发送到设备的数据的JSON字典。有效载荷包含了你想如何去通知用户的信息，例如使用一个提醒，徽章或者声音。它也可以包含你定义的自定义数据。</p>
+
+<p>图3-2显示一个抽象网络APNs在提供者和设备间可能的更现实的描述。设备面和提供者面与APNs面两者都有多个连接点；在提供者面，这些被称为网关。通常有多个提供者，每一个都通过这些网关制造一个或者多个与APNs持久和安全的连接。这些提供者通过APNs发送通知到更多安装了客户端APP的设备。</p>
+
+<p>图3-2 推送来自多个提供者的远程通知到多个设备
+<img src="http://liuhaoxiu.github.io/images/remote_notif_multiple_2x.png" width="612" height="807"></p>
+
+<p>关于获得设备令牌的更多信息，看<code>Token Generation and Dispersal</code>。关于通知有效载荷的信息，看<code>The Remote Notification Payload</code>。</p>
+
+<h3>服务质量(Quality of Service)</h3>
+
+<p>Apple推送通知服务包含一个默认的服务质量部分，它执行一个存储和转发功能。如果APNs试图去交付一个通知但是设备不在线，这个通知在有限的时间里被存储，当设备变得可以获得时交付到设备。只有一个最近的通知为特定的应用程序存储。在设备不在线期间如果多个通知发送，新的通知会引起先前的通知被丢弃。这种行为只保留最新的通知。</p>
+
+<p>如果设备不在线很长一段时间，任何被存储的通知都会被丢弃。</p>
+
+<h3>安全结构(Security Architecture)</h3>
+
+<p>去确保安全通讯，APNs使用两个不同的信任级别：连接信任和令牌信任调节提供者和设备之间的入口点。</p>
+
+<p>连接信任建立了确定性，APNs连接到Apple已经同意交付通知的授权提供者。APNs也使用与设备的连接信任去确保设备的合法性。与设备的连接信任是由APNs自动处理的，但是你必须采取措施去确保在你的提供者和APNs之间连接信任的存在。</p>
+
+<p>令牌信任确保通知只在合法的开始和结束点间路由。令牌信任涉及设备令牌使用，他是在一个特定设备上分配给指定APP的一个不透明标识符。当它与APNs注册时每一个APP接收它唯一的令牌并且必须分享令牌给它的提供者。此后，令牌必须伴随由你的提供者发送的每一个通知。提供令牌确保通知是只交付到它的APP/设备的组合。</p>
+
+<p><code>NOTE:一个设备令牌不是一个唯一ID，你可以使用它去识别一个设备。在一个设备上更新操作系统后设备令牌可能改变。因此，应用程序应该发送他们的设备令牌</code></p>
+
+<p>APNs服务也有必要的证书，CA证书，为了验证连接的加密秘钥(私有和公有)和提供者身份标识和设备。</p>
+
+<h4>提供者对APNs的连接信任(Provider-to-APNs Connection Trust)</h4>
+
+<p>每一个提供者必须有一个唯一的提供者证书和私有加密秘钥，这个是用来验证提供者与APNs连接的。提供者证书(这个是Apple提供的)标识通过提供者主题支持。(一个主题是bundle ID与你的APP其中之一的关联。)</p>
+
+<p>你的提供者与APNs通过TLS对等认证建立连接信任。TLS连接启动之后，你获得来自APNs的服务证书和在你结束时验证这个证书。接着你发送你的提供者证书到APNs，它在结束时验证证书。这个步骤完成之后，一个安全的TLS连接已经建立；APNs现在是满足其连接由一个合法的提供者制造。</p>
+
+<p>图3-3 在提供者和APNs间建立连接信任
+<img src="http://liuhaoxiu.github.io/images/service_provider_ct_2x.png" width="612" height="807"></p>
+
+<p>HTTP/2提供者连接对于交付到一个特定的APP是有效的，由证书中指定的主题(bundle ID)标识。根据你如何配置和提供你的APNs SSL证书，这个连接也可以对远程通知交付到任何Apple Watch complications或者与主要APP关联的后台VoIP服务有效。看详细<code>APNs Provider API</code>。APNs也维护证书吊销列表；如果一个提供者证书在这个列表上，APNs可以撤销提供者信任(拒绝连接)。</p>
+
+<h4>APNs对设备的连接信任(APNs-to-Device Connection Trust)</h4>
+
+<p>每个设备有一个设备证书和私有加密秘钥，他是用于验证设备与APNs的连接。设备在设备激活时间时获得证书和密钥并存储它们到钥匙扣(keychain)。</p>
+
+<p>你不需要做任何事来建立APNs与设备之间的连接信任。APNs通过TLS对等认证建立一个连接设备标识。在这个过程中，设备开启一个与APNs的TLS连接，它返回一个他的服务端证书，设备验证这个证书接着发送它的设备证书到APNs，然后APNs验证证书。</p>
+
+<p>图3-4 建立设备和APNs间的连接信任
+<img src="http://liuhaoxiu.github.io/images/service_device_ct_2x.png" width="612" height="807"></p>
+
+<h4>令牌生成与扩散(Token Generation and Dispersal)</h4>
+
+<p>应用程序必须与系统注册以接收远程通知,如描述在<code>Registering for Remote Notifications</code>里。收到注册请求后，系统转发请求到APNs，它产生一个唯一的设备令牌，对于应用程序，使用设备证书中包含的信息。它接着使用令牌秘钥加密令牌然后返回它到设备，如图3-5所示。系统交付设备令牌到你的APP使用NSDATA对象交付。接收到此令牌，你APP必须传发它到你的提供者，使用二进制或十六进制格式。没有这个令牌你的提供者不能发送通知到设备。</p>
+
+<p>图3-5 管理设备令牌
+<img src="http://liuhaoxiu.github.io/images/token_generation_2x.png" width="612" height="807"></p>
+
+<p><code>Important:APNs设备令牌长度是可变的。不要硬编码他们的大小。</code></p>
+
+<p>图3-6表明令牌生成和扩散序列，但是除了显示的由APNs返回的令牌路径外，随后会转发给你的自定义提供者。</p>
+
+<p>图3-6 共享设备令牌
+<img src="http://liuhaoxiu.github.io/images/registration_sequence_2x.png" width="612" height="807"></p>
+
+<h4>令牌信任(通知)(Token Trust (Notification))</h4>
+
+<p>每一个你提供者发送到APNs的通知必须伴随一个与设备关联的设备令牌。APNs使用它的令牌秘钥去解密令牌去确保通知源的有效性&ndash;这里通知源是你的提供者。APNs使用在设备令牌里包含的设备ID去确定目标设备标识。它接着发送通知到这个设备，如图3-7所示。</p>
+
+<p>图3-7 使用设备令牌识别设备
+<img src="http://liuhaoxiu.github.io/images/token_trust_2x.png" width="612" height="807"></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用AFNetworking 3.x做https安全连接]]></title>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://liuhaoxiu.github.io/blog/2017/03/21/appletui-song-tong-zhi-fu-wu/</loc>
+<lastmod>2017-03-21T17:17:31+08:00</lastmod>
+</url>
+<url>
 <loc>http://liuhaoxiu.github.io/blog/2017/01/19/shi-yong-afnetworking-3-dot-xzuo-httpsan-quan-lian-jie/</loc>
 <lastmod>2017-01-19T10:00:20+08:00</lastmod>
 </url>
@@ -49,8 +53,5 @@
 </url>
 <url>
 <loc>http://liuhaoxiu.github.io/</loc>
-</url>
-<url>
-<loc>http://liuhaoxiu.github.io/posts/2/</loc>
 </url>
 </urlset>
