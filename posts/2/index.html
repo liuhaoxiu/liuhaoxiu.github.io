@@ -9,7 +9,7 @@
   <meta name="author" content="刘浩">
 
   
-  <meta name="description" content="引言 此篇文章几乎是对照着Apple文档翻译，某些地方是按照自己理解翻译的，难免有理解和翻译不当的地方，在此告知。 APP生命周期（The App Life Cycle） APP是在你的自定义代码和系统框架中间复杂的相互作用。这个系统框架提供了所有的APP运行需要的基础结构， &hellip;">
+  <meta name="description" content="引言 此篇文章几乎是对照着Apple文档翻译，某些地方是按照自己理解翻译的，难免有理解和翻译不当的地方，在此告知。 扩展APP行为 每一个新的Xcode项目从配置好到马上运行在iOS模拟器或者设备上。但是简单的能够运行在一个设备上并不意味着你的APP准备好传送到APP Store上。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,7 +71,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2016/07/12/appsheng-ming-zhou-qi-yu-hou-tai-zhi-xing/">APP生命周期与后台执行</a></h1>
+      <h1 class="entry-title"><a href="/blog/2016/07/12/kuo-zhan-appde-xing-wei/">扩展App的行为</a></h1>
     
     
       <p class="meta">
@@ -80,7 +80,7 @@
 
 
 
-<time class='entry-date' datetime='2016-07-12T18:20:42+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:20 pm</span></time>
+<time class='entry-date' datetime='2016-07-12T18:30:04+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:30 pm</span></time>
         
       </p>
     
@@ -91,180 +91,61 @@
 
 <p>此篇文章几乎是对照着Apple文档翻译，某些地方是按照自己理解翻译的，难免有理解和翻译不当的地方，在此告知。</p>
 
-<h1>APP生命周期（The App Life Cycle）</h1>
+<h1>扩展APP行为</h1>
 
-<p>APP是在你的自定义代码和系统框架中间复杂的相互作用。这个系统框架提供了所有的APP运行需要的基础结构，你提供的代码需要去定制这个结构和给APP一个样子和你想要的感觉。有效的做这个，它帮助你了解一点点关于iOS的结构和它如何工作的
-iOS框架依赖于设计模式，例如MVC和代理在他里面的实现。了解这些设置模式是成功创建一个APP的关键。他同样帮助你熟悉objective-c语言和它的特性。</p>
+<p>每一个新的Xcode项目从配置好到马上运行在iOS模拟器或者设备上。但是简单的能够运行在一个设备上并不意味着你的APP准备好传送到APP Store上。每一个APP都需要一定量的定制去确保给用户一个好的用户体验。定制的范围从给APP一个图标到制作一个建筑级别决定你的APP如何去呈现和使用信息。这些定制的行为可以再APP的计划过程中尽早的考虑。</p>
 
-<h1>APP的结构（The Structure of an App）</h1>
+<h1>具体的可以分为以下几项</h1>
 
-<p>在启动的时候，这个UIApplicationMain函数建立几个关键的对象和开始这个APP运行。每一个APP的核心是UIApplication对象，它的工作是在APP中去便利系统和另外对象的交互。iOS应用都采用了mvc结构，这个模式用来数据视觉呈现时的数据和业务逻辑的分离。这个是去创建APP运行在不同的设备的不同屏幕尺寸上的关键结构。</p>
+<h2>提供所需的资源</h2>
 
-<h2>iOS应用中各个对象的角色</h2>
-
-<h3>UIApplication对象</h3>
-
-<p>UIApplication对象管理事件的循环和另外的高等级的行为。它同样传达关键的APP迁移和一些特定的事件（例如正到来的推送通知）给它的代理。</p>
-
-<h3>App delegate对象</h3>
-
-<p>这个App delegate是你自定义代码的核心。这个对象和UIAplication对象协力去操作APP的初始化，状态迁移，和许多高等级APP事件。这个对象同样保证在每一个APP中仅仅一个，如此它通常用来建立APP的初始数据结构。</p>
-
-<h3>Documents和data model对象</h3>
-
-<p>Data model对象存储了你的APP内容并且是特定于你的APP的。APP能同样使用document对象（自定义UIDocument子类）去管理一些或者所有的他们的data model对象。Document对象不是必须的，但是它提供一种方便的方法去组织你的数据到一个单个的文件或者文件包中。</p>
-
-<h3>View controller</h3>
-
-<p>UIViewController是所有View controller对象的基类。它提供了默认的功能关于加载视图，呈现他们，旋转他们去响应设备的旋转，和几个另外的标准的系统行为。UIKit和另外的框架定义了额外的View controller类去实现标准的系统界面，例如图片选择器（image picker），tab bar界面和导航界面。</p>
-
-<h3>UIWindow对象</h3>
-
-<p>UIWindow对象协调一个或多个视图的显示。大部分的APP只有一个window，它在主屏幕上呈现内容，但是APP可能有一个额外的视图关于显示内容到一个外部的显示。
-去改变你的APP的内容，你使用view controller去改变视图在相应的window里的显示。你永远不可能替换window本身。
-除了承载视图，Windows和UIApplication一起工作去交付事件给你的视图和view controllers。</p>
-
-<h3>View对象，control对象和layer对象</h3>
-
-<p>Views和controls提供你的APP的内容的视觉表现。一个view是一个对象，它绘制内容在一个指定的矩形区域，响应这个指定的矩形区域中的事件。Controls是一个专门的view类型，负责实现熟悉的界面对象，例如buttons、text field和toggle switches。</p>
-
-<h1>APP执行状态（Execution States for Apps）</h1>
-
-<p>在任何一个给定的时刻，你的APP都是在下面的任意一个状态。系统在整个系统运行期为了响应动作的发生去迁移你的APP从一个状态到另外一个状态。例如用户按了home键，一个电话打进来或者任何几个其他的中断发生，当前运行的APP响应后去改变自己的状态。一下是一些APP各状态描述。</p>
-
-<h2>没有运行（Not running）</h2>
-
-<p>这个APP没有启动或者在运行但是通过启动终结了。</p>
-
-<h2>未活动（Inactive）</h2>
-
-<p>这个APP运行在前台但是现在不接受事件。（它可能执行另外的代码）一个APP通常只停留在这个状态一瞬间然后他迁移到不同的状态。</p>
-
-<h2>活动(Actice)</h2>
-
-<p>APP运行在前台并且接受事件。这个是一个前台APP标准的模式。</p>
-
-<h2>后台（Background）</h2>
-
-<p>APP后台和执行代码，大部分APP进入这个转态一瞬间就被系统挂起。无论如何，一个APP请求一个额外的执行时间能够保持在这个状态一段时间。另外，一个APP启动时直接进入后台状态而不是未活动（Inactive）状态.</p>
-
-<h2>挂起（Suspended）</h2>
-
-<p>APP进入后台但是没有执行代码，系统自动移动APP到挂起状态并且做这个的时候没有通知。在挂起的期间，APP保持在内存里但是不执行任何代码。
-当一个低内存状况发生，系统可能净化挂起的APP去制造更多的空间给前台APP并且做这个的时候没有通知。
-大部分的状态迁移都伴随着APP代理方法的调用。这些方法是给你机会用一些适当的方式去响应状态的改变。以下是这些方法的列表。</p>
-
-<h3>application:willFinishLaunchingWithOptions:</h3>
-
-<p>这个方法是在APP启动时第一次机会去执行代码。</p>
-
-<h3>application:didFinishLaunchingWithOptions:</h3>
-
-<p>这个方法是你的APP显示给用户之前运行你执行任何最终的初始化处理。</p>
-
-<h3>applicationDidBecomeActive:</h3>
-
-<p>让你知道你的APP已经变为了前台APP。这个方法给你最后一分钟的准备。</p>
-
-<h3>applicationWillResignActive:</h3>
-
-<p>让你知道你的APP将迁移离开前台APP，使用这个方法把你的APP变为一个静态状态。</p>
-
-<h3>applicationDidEnterBackground:</h3>
-
-<p>让你知道你的APP现在运行在后台状态并且随时可能挂起。</p>
-
-<h3>applicationWillEnterForeground:</h3>
-
-<p>让你知道你的APP已经移动退出了后台状态和返回进入了前台，但是这个还不是活动的状态。</p>
-
-<h3>applicationWillTerminate:</h3>
-
-<p>让你知道你的APP开始终结。如果你的APP挂起了，那么不会调用这个方法。</p>
-
-<h1>后台执行（Background Execution）</h1>
-
-<p>当用户没有积极的使用你的app时，系统会移动这个app到后台状态，许多的APP，在后台状态事实是驻留一瞬间就被系统迁移到挂起状态了。挂起APP这个做法是为改善电池寿命和把系统的重大资源用于新的前台APP以用于吸引用户的手段。
-大部分的APP能够相当容易的迁移到挂起状态但是也同样有正当的持续在后台运行的理由。例如一个徒步旅行APP可能想要追踪用户在任何时间的位置这样能够显示航线在徒步旅行地图上面。一个音频APP可能需要在锁屏的时候继续播放音乐。另外一些APP可能需要在后台下载内容如此它能以最小的延迟展现这个内容给用户。当你认为需要你的APP能够在后台运行，iOS帮助你有效的做这些并不耗尽系统资源和用户电池。这个技术通过iOS分成三类提供。</p>
+<h3>你创建每一个APP都必须有接下来的资源集合和元数据如此它才能正确的显示在设备上。</h3>
 
 <ol>
-<li>APP在前台启动一个短的任务，当APP迁移到后台时能够请求时间去结束这个任务。</li>
-<li>APP在前台开始下载能够挪动那些下载的管理给系统管理，从而在下载期间允许APP挂起或者终结。</li>
-<li>APP需要在后台运行指定的任务类型，可以声明他们要支持的一个或者多个后台任务模式。</li>
+<li>一个信息属性列表文件。这个Info.plist文件包含了你的APP的元数据，系统使用这些信息去和你的APP交互。Xcode会自动的基于你的项目的配置和设置创建这个文件。如果你想直接的查看或者修改这个内容，你能操作你的项目的Info选项卡。</li>
+<li>一个APP所需能力的声明。每一个APP必须声明它运行时所需要的硬件能力或者特性.APP Store使用这个信息确定是否能够在一个特定的设备上运行你的APP。你能够在Info选项卡的"Required device capabilities"条目上编辑你的APP需要量列表。</li>
+<li>一个或者多个图标。系统在用户设备主屏幕上显示的你的APP的图标。系统可能显示在设置应用上或者一个查询结果上使用的是你图标其他的版本。</li>
+<li>一个或者多个启动图片。当一个APP启动时，系统显示一个临时的图片直到这个APP能够呈现它的用户界面为止。这个临时的图片是你的APP的 启动图片他提供给用户及时的反馈你的APP是正在启动和将要马上准备好了。你必须提供至少一个启动图片，你可能提供了额外的启动图片去解决不同的场景。</li>
 </ol>
 
 
-<p>总是试图去避免做任何后台工作，除非这么做能够改善整体的用户体验。一个APP迁移到后台的可能的原因有用户启动了一个不同的APP或者因为用户锁定了设备和此时没有使用这个APP.在这两种情况，用户此时不需要你的APP做任何有意义的工作。在这样的条件下继续运行你的APP仅仅是耗尽电池和可能导致用户去强制完全退出你的APP。如此记住在后台你做的工作当你能避免的时候避免。</p>
+<p>以上的这些资源是所有的APP必须的但是你包含的应该不仅仅是这些资源。有更多的键Xcode默认没有包含在你的APP的Info.plist文件中。更多额外的键仅仅是当你的APP包含了特定的特性时加入。</p>
 
-<h1>执行有限长度的任务（Executing Finite-Length Tasks）</h1>
+<h1>APP包(Bundle)</h1>
 
-<p>APP迁移到后台是预期把自己尽可能快的进入到一个静止的转态，如此系统能够暂停他们。如果APP是在一个任务运行的中间和需要一点时间去完成这个任务，它能够调用UIApplication对象的 beginBackgroundTaskWithName:expirationHandler: 或者beginBackgroundTaskWithExpirationHandler:方法去请求一些额外的执行时间。调用这两个方法中的任何一个都可以暂时去延迟你的APP的挂起，给它一点额外的时间去结束这个工作。到这个工作完成的时候，你的APP必须调用endBackgroundTask:方法去让系统知道任务结束了系统能够挂起这个APP了。
-每次调用beginBackgroundTaskWithName:expirationHandler: 或者beginBackgroundTaskWithExpirationHandler:方法生成一个唯一的令牌（token）去关联相应的任务。但你的APP完成了一个任务的时候，它必须用相应任务的令牌（token）作为参数去调用endBackgroundTask:方法去让系统知道这个任务完成了。失败去调用endBackgroundTask:方法关于一个后台任务将导致你的应用程序终结。当开始这个任务如果你提供了一个到期终止处理（expiration handler）,这个系统调用这个到期终止处理（expiration handler）给你一个最后的机会去结束任务和避免APP终结。
-你不需要去等到你的APP迁移到后台的时候再去指派后台任务。开始一个任务之前，一个更有用的设计是调用beginBackgroundTaskWithName:expirationHandler: 或者 beginBackgroundTaskWithExpirationHandler:方法。等到你的任务结束就调用endBackgroundTask:方法。</p>
+<p>当你建立你的APP的时候，Xcode包装它作为一个包(Bundle).一个包(Bundle)在文件系统中是一组相关的资源放在一个地方的目录。一个iOS App包(Bundle)包含一个APP执行文件和所支持的资源文件例如应用程序图标，图片文件，和本地化内容。</p>
 
-<p>在你自己的到期终止处理（expiration handler）中，你能够包含额外的需要去关闭你的任务的代码。你包含的任何代码不能拿太长时间去执行，因为到你调用到期终止处理（expiration handler）时候，你的APP已经很靠近它的时间限制了。因为这个原因，仅仅执行极少的你的状态信息的清理和结束这个任务。</p>
+<h1>支持用户隐私</h1>
 
-<h1>在后台下载内容（Downloading Content in the Background）</h1>
-
-<p>但下载文件时，APP应该使用一个NSURLSession对象去开始一个下载，如果这个APP挂起或者终结此时系统能拿到这个下载处理的控制。当你配置一个NSURLSession对象作为后台传输用，系统在一个独立的处理里面管理那些传输和以通常的方式报告状态给你的APP。当以传输在进行期间如果你的APP终结了，系统在后台继续这个传输，当这个传输结束或者当一个或多个任务需要你的APP的注意，启动这个APP（当适当的时候）。
-去支持后台传输，你必须适当的配置你的NSURLSession对象，去配置这个回话（session），你必须首先创建一个NSURLSessionConfiguration对象和设置这个对象的几个属性到适当的值。当创建这个回话（session）的时候，你接着传递那个配置对象到NSURLSession的适当的初始化方法。</p>
-
-<p>创建支持后台下载配置对象的过程如下：</p>
+<p>当你设计你的APP的时候保护用户隐私应该作为一个重要考虑。大部分iOS设备包含了用户和设备数据用户可能不想暴露这些数据到应用和外部实体。请记住如果你用一个不恰当的方法去使用数据用户可能会删除你的APP。
+访问用户或者设备数据仅仅是当用户了解同意并和适当的法律一致时。另外，采取适当的步骤去保护用户和设备数据清晰的告诉用户你要如何使用这些数据。你可以采用下面的一些好的实践。</p>
 
 <ol>
-<li>使用NSURLSessionConfiguration的 backgroundSessionConfigurationWithIdentifier: 方法创建配置对象。</li>
-<li>设置配置对象的sessionSendsLaunchEvents属性值为YES.</li>
-<li>如果你的APP在前台期间启动的下载，推荐你同样设置配置对象的discretionary属性值为YES。</li>
-<li>配置这个配置对象任何其他的属性值到适当的值。</li>
-<li>使用这个配置对象去创建你的NSURLSession对象。</li>
+<li>可以和公司的法律顾问一起看一些来自政府或者行业关于保护移动用户隐私的文档。</li>
+<li>请求访问用户或者设备数据有时候是需要的，这个数据是受iOS系统授权设置保护的。考虑在你的Info.plist文件里供应一个用法描述字符串用来解释为什么APP需要用到这个数据。受iOS系统授权设置保护的数据包含位置数据，联系人，日历事件，备忘录，照片和媒体。</li>
+<li>明确的告诉用户你将要如何去使用这些数据。</li>
+<li>给用户控制这些用户和设备数据。提供设置如此用户能够禁止访问某些需要的敏感数据。</li>
+<li>请求使用需要的最少量的用户或者设备数据去完成一个给定的任务。如果不明显的原因或者不必要的原因或者因为你觉得这些数据以后会有用等等这些情况都不要去访问查寻或者收集数据。</li>
+<li>采用合理的步骤去保护收集在你的APP中的用户和设备数据。当存储这些信息在本地时，尝试使用iOS数据保护特性 (described in Protecting Data Using On-Disk Encryption)去存储它为一个加密的格式。当你要经过网络发送用户或者设备数据时尝试采用HTTPS连接。</li>
+<li>如果你的APP使用了ASIdentifierManager类，你必须考虑它的advertisingTrackingEnabled属性值。如果用户设置这个属性值为NO，使用这个类仅仅是有限的广告目的。</li>
+<li>如果你还没有这么做得话，停止使用UDID。这个属性在iOS 5.0已经废弃了。App Store不接受新的APP或者APP更新使用这个标识。作为替代，ASIdentifierManager类的advertisingIdentifier属性是适合的。</li>
+<li>如果你的APP支持音频输入，那么仅仅在你实际上计划要开始录音的地方配置你的录音回话（audio session）。如果你没有计划立即录音不要在启动的时候配置你的录音回话（audio session）。在iOS7中，当APP配置他们的录音的录音回话（audio session）时系统会提醒用户，并给用户一个禁用录音的选项。</li>
 </ol>
 
 
-<p>一单配置，你的NSURLSession对象在适当的时候无缝移交这个上传和下载任务给系统。在APP仍然在运行的时候如果你的任务结束（前台和后台任其一的状态），这个回话（session）对象以通常的方式通知它的代理（delegate）。如果这个任务尚未完成此时系统终结了你的APP，这个系统自动的在后台继续管理这个任务。如果用户终结了你的APP，系统取消所有的待执行的任务。</p>
+<h1>APP国际化</h1>
 
-<h1>实现长运行任务（Implementing Long-Running Tasks）</h1>
-
-<p>对于需要更多执行时间去实施的任务，你必须请求指定的许可（specific permissions ）在后台去运行他们，没有他们APP在后台会被暂停。iOS中，只有特定的APP类型能被允许在后台运行：</p>
-
-<ol>
-<li>在后台播放有声音的内容给用户的APP，例如音乐播放APP。</li>
-<li>在后台录制音频内容的APP。</li>
-<li>让用户随时了解他们的位置的APP，例如导航APP。</li>
-<li>支持VoIP（Voice over Internet Protocol）的APP。</li>
-<li>接收来自外部附件定期更新的APP。</li>
-</ol>
-
-
-<p>实现这些服务（services）的APP必须声明相应的服务，他们支持和使用系统框架去实现那些服务相关的方面。声明服务让系统知道你使用了哪一种服务，但在某些情况下，系统框架实际阻止了你的APP被暂停。</p>
-
-<h2>声明你APP支持的后台任务（Declaring Your App’s Supported Background Tasks）</h2>
-
-<p>支持一些后台执行类型必须通过你的APP提前声明使用它们。在Xcode5以后，你在你项目设置的“Capabilities”标签中声明你的APP所支持的后台模式。启用这个后台模式选项添加UIBackgroundModes键到你的APP的Info.plist文件中。选择一个或者多个检验盒（checkboxes ）添加相应的后台模式值到该键。你能指定以下的后台模式，Xcode会分配这个值到你的APP的Info.plist文件的UIBackgroundModes键中。</p>
+<p>因为APP分布在许多的国家，本地化你的APP能帮助你联络到更多的用户。当APP被本地化为他们的母语时，更多的用户可能会使用这个APP。当你把面向用户的内容作为因素插入到资源文件时，本地化这个内容是一个相对简单的过程。
+在你可能本地化你的内容以前，你必须使你的APP国际化这样是为了便利本地化的过程。国际化APP牵涉的因素有任何面向用户的内容插入到本地化的资源文件和提供存储内容特定语言项目目录。当使用特定语言和特定地区内容工作时它同样意味着使用恰当的技术（例如时间和数字格式化）
+一个完全国际化的APP，本地化过程创建一个新的特定语言资源文件添加到你的项目。一个典型的iOS应用需要接下来这些资源文件类型的本地化版本。</p>
 
 <ol>
-<li>Audio和AirPlay。</li>
-<li>位置更新</li>
-<li>VoIP(Voice over IP)</li>
-<li>Newsstand下载。</li>
-<li>外部附近通信。</li>
-<li>使用蓝牙LE附件。</li>
-<li>Acts as a Bluetooth LE accessory。</li>
-<li>后台拉取。</li>
-<li>远程通知。</li>
+<li>Storyboard文件(或者nib文件)-Storyboard能包含文本标签和另外的需要本地化的内容。你可能同样想调整界面项的位置去适应文本长度的改变。（同样的，nib文件能包含你需要本地化的文本或者你需要去更新的布局）</li>
+<li>Strings文件-Strings文件（如此命名是因为他们的.strings文件名扩展）包含你的APP显示的静态文本的本地化版本。</li>
+<li>Image文件-你应该避免本地化图片除非图片包含了特定的文化内容。在任何时候，你应该避免直接的存储文本在你的图片文件里面。从你的APP里面加载和使用图片，存储文本到一个strings文件，在运行时，把文字内容和图片内容整合在一起。</li>
+<li>录像和录音文件-你应该避免本地化多媒体文件，除非他们包含了特定语言或者特定文化的内容。</li>
 </ol>
 
-
-<p>每一个前面的模式让你的系统知道你的APP应该在适当的时间唤醒或者启动去相应相关的事件。</p>
-
-<h1>在后台获得用户的注意（Getting the User’s Attention While in the Background）</h1>
-
-<p>通知是一个当你的APP挂起、在后台或者没有运行需要获得用户注意的方式。APP能够使用本地通知去显示通告，播放声音，以APP的图标为徽章显示，或者这三个的组合。
-排定一个本地通知的交付，创建一个UILocalNotification类的实例，配置这个通知的参数，使用UIApplication类的方法计划他。</p>
-
-<h1>选择退出后台执行</h1>
-
-<p>如果你不想要你的APP在任何时候运行在后台，你能够通过添加UIApplicationExitsOnSuspend键（设置值为YES）到你的APP的Info.plist文件来明确的选择退出后台。当一个APP是这样设置的，它将循环在没有运行（not-running），未活跃的（inactive），和活跃（active）状态之间，并且从不进入后台或者挂起状态。当用户按了Home键去退出这个APP，这个APP的代理方法 applicationWillTerminate:会被调用，他终结以前APP大约有五秒时间去清理和退出，迁移到没运行（not-running）的状态。
-选择退出后台执行时强烈反对的，但是可能在一定条件下是首选的。</p>
 </div>
   
   
@@ -285,6 +166,10 @@ iOS框架依赖于设计模式，例如MVC和代理在他里面的实现。了�
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2018/04/23/jing-dian-pai-xu-suan-fa/">经典排序算法</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2017/03/21/appletui-song-tong-zhi-fu-wu/">Apple推送通知服务</a>
@@ -314,10 +199,6 @@ iOS框架依赖于设计模式，例如MVC和代理在他里面的实现。了�
         <a href="/blog/2016/07/29/yong-gong-ju-gui-fan-ocdai-ma-yang-shi/">用工具规范OC代码样式</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/07/22/chu-li-appzhuang-tai-zhuan-huan-de-ce-lue/">处理APP状态转换的策略</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -331,7 +212,7 @@ iOS框架依赖于设计模式，例如MVC和代理在他里面的实现。了�
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2017 - 刘浩 -
+  Copyright &copy; 2018 - 刘浩 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
